@@ -6,8 +6,8 @@ import time
 from bs4 import BeautifulSoup
 
 # Read existing CSV file
-input_csv_file = './backend/remoteco/remoteco_jobs.csv'
-output_csv_file = './backend/remoteco/remoteco_jobs_detailed.csv'
+input_csv_file = './backend/stackoverflow_jobs/stackoverflow_jobs.csv'
+output_csv_file = './backend/stackoverflow_jobs/stackoverflow_jobs_detailed.csv'
 
 # Define Safari options
 safari_options = Options()
@@ -15,8 +15,8 @@ safari_options = Options()
 # Initialize WebDriver with Safari options
 driver = webdriver.Safari(service=Service(), options=safari_options)
 
-# Define columns for detailed CSV
-fieldnames = ['Title', 'Company', 'Job Type', 'URL', 'Location', 'Benefits', 'Posted Date']
+# Define columns for CSV
+fieldnames = ['Title', 'Company', 'Location', 'Posted Date', 'URL', 'Job Description']
 
 # Open input CSV file and create output CSV file
 with open(input_csv_file, mode='r', newline='') as infile, open(output_csv_file, mode='w', newline='') as outfile:
@@ -33,23 +33,18 @@ with open(input_csv_file, mode='r', newline='') as infile, open(output_csv_file,
         html = driver.page_source
         soup = BeautifulSoup(html, 'html.parser')
 
-        # Extract detailed information using correct class names
-        location = soup.find('div', class_='col-10 col-sm-11 pl-1').text.strip() if soup.find('div', class_='col-10 col-sm-11 pl-1') else 'N/A'
-        benefits = soup.find('div', class_='benefits_sm row').text.strip() if soup.find('div', class_='benefits_sm row') else 'N/A'
-        
-        # Correctly extract posted date using datetime attribute
-        date_element = soup.find('time', datetime=True)
-        posted_date = date_element['datetime'] if date_element and 'datetime' in date_element.attrs else 'N/A'
+        # Extract job description
+        job_details_div = soup.find('div', id='job-details')
+        job_description = ' '.join(p.get_text(strip=True) for p in job_details_div.find_all('p')) if job_details_div else 'N/A'
 
         # Write detailed information to output CSV
         writer.writerow({
             'Title': row['Title'],
             'Company': row['Company'],
-            'Job Type': row['Job Type'],
+            'Location': row['Location'],
+            'Posted Date': row['Posted Date'],
             'URL': row['URL'],
-            'Location': location,
-            'Benefits': benefits,
-            'Posted Date': posted_date
+            'Job Description': job_description
         })
 
 # Close WebDriver

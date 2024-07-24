@@ -10,17 +10,18 @@ import csv
 
 # Define Safari options
 safari_options = Options()
+
 # Initialize WebDriver with Safari options
 driver = webdriver.Safari(service=Service(), options=safari_options)
 
-# Define the URL for the job search
+# Define URL for job search
 url = 'https://remote.co/remote-jobs/search/?search_keywords=software+engineer'
 
-# Open the URL
+# Open URL
 driver.get(url)
 
-# Wait for the page to fully load
-time.sleep(5)  # Adjust the sleep time if necessary
+# Wait for page to fully load
+time.sleep(5)  
 
 # Click 'Load more listings' until all jobs are loaded
 while True:
@@ -36,13 +37,13 @@ while True:
         print("No more 'Load more listings' button found or error occurred:", e)
         break
 
-# Get the page source after all jobs are loaded
+# Get page source after all jobs are loaded
 html = driver.page_source
 
-# Parse the HTML content using BeautifulSoup
+# Parse HTML content using BeautifulSoup
 soup = BeautifulSoup(html, 'html.parser')
 
-# Find all job postings on the page
+# Find all job postings on page
 job_elements = soup.find_all('div', class_='job_listing')
 
 # Extract job information
@@ -55,7 +56,7 @@ for job_element in job_elements:
     company_and_type_element = job_element.find('p', class_='m-0 text-secondary')
     company_and_type_text = company_and_type_element.text.strip() if company_and_type_element else 'N/A'
     
-    # Split the company and job type based on the | character
+    # Split company and job type based on the | character
     parts = company_and_type_text.split('|')
     company = parts[0].strip() if len(parts) > 0 else 'N/A'
     job_type = parts[1].strip() if len(parts) > 1 else 'N/A'
@@ -67,8 +68,8 @@ for job_element in job_elements:
         'url': url
     })
 
-# Save the data to a CSV file
-csv_file = 'remoteco_jobs.csv'
+# Save data to a CSV file
+csv_file = './backend/remoteco/remoteco_jobs.csv'
 fieldnames = ['Title', 'Company', 'Job Type', 'URL']
 with open(csv_file, mode='w', newline='') as file:
     writer = csv.DictWriter(file, fieldnames=fieldnames)
@@ -83,5 +84,5 @@ with open(csv_file, mode='w', newline='') as file:
 
 print(f"Data saved to {csv_file}")
 
-# Close the WebDriver
+# Close WebDriver
 driver.quit()
