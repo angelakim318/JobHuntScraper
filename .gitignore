@@ -1,2 +1,13 @@
 # Virtual Environment
-venv
+venv/
+
+# Data files
+backend/remoteco/remoteco_jobs_detailed.csv
+backend/remoteco/remoteco_jobs.csv
+
+# Python cache files
+__pycache__/
+*.pyc
+
+# VS Code settings
+.vscode/
