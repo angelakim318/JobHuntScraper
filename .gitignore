@@ -2,10 +2,7 @@
 venv/
 
 # Data files
-backend/remoteco/remoteco_jobs_detailed.csv
-backend/remoteco/remoteco_jobs.csv
-backend/stackoverflow_jobs/stackoverflow_jobs_detailed.csv
-backend/stackoverflow_jobs/stackoverflow_jobs.csv
+*.csv
 
 # Python cache files
 __pycache__/
