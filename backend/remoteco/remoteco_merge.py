@@ -25,6 +25,9 @@ merged_df.rename(columns={
     'job type_y': 'job type'
 }, inplace=True)
 
+# Fill missing values with 'N/A'
+merged_df.fillna('N/A', inplace=True)
+
 # Save merged DataFrame to a new CSV file
 merged_csv_path = 'backend/remoteco/remoteco_combined.csv'
 merged_df.to_csv(merged_csv_path, index=False)
