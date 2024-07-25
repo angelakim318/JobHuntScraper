@@ -1,58 +1,71 @@
+import time
 import csv
 from selenium import webdriver
-from selenium.webdriver.safari.service import Service
+from selenium.webdriver.common.by import By
 from selenium.webdriver.safari.options import Options
-import time
 from bs4 import BeautifulSoup
 
-# Read existing CSV file
-input_csv_file = './backend/remoteco/remoteco_jobs.csv'
-output_csv_file = './backend/remoteco/remoteco_jobs_detailed.csv'
+# Define the URL and search parameters
+base_url = "https://www.simplyhired.com/search?q=software+engineer&l=Philadelphia%2C+PA&sr=50"
 
-# Define Safari options
-safari_options = Options()
+# Set up Safari options to include user agent
+options = Options()
+options.add_argument("--headless")
+options.add_argument("user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36")
 
-# Initialize WebDriver with Safari options
-driver = webdriver.Safari(service=Service(), options=safari_options)
+# Initialize WebDriver
+driver = webdriver.Safari(options=options)
 
-# Define columns for detailed CSV
-fieldnames = ['Title', 'Company', 'Job Type', 'URL', 'Location', 'Benefits', 'Posted Date']
+# Function to scrape a single page
+def scrape_page(url):
+    driver.get(url)
+    time.sleep(3)  # Allow time for the page to load
 
-# Open input CSV file and create output CSV file
-with open(input_csv_file, mode='r', newline='') as infile, open(output_csv_file, mode='w', newline='') as outfile:
-    reader = csv.DictReader(infile)
-    writer = csv.DictWriter(outfile, fieldnames=fieldnames)
-    writer.writeheader()
+    job_cards = driver.find_elements(By.CLASS_NAME, 'SerpJob-jobCard')
+    jobs = []
 
-    for row in reader:
-        job_url = row['URL']
-        driver.get(job_url)
-        time.sleep(5)  # Wait for the page to load
-
-        # Get page source and parse it
-        html = driver.page_source
-        soup = BeautifulSoup(html, 'html.parser')
-
-        # Extract detailed information using correct class names
-        location = soup.find('div', class_='col-10 col-sm-11 pl-1').text.strip() if soup.find('div', class_='col-10 col-sm-11 pl-1') else 'N/A'
-        benefits = soup.find('div', class_='benefits_sm row').text.strip() if soup.find('div', class_='benefits_sm row') else 'N/A'
+    for job_card in job_cards:
+        soup = BeautifulSoup(job_card.get_attribute('outerHTML'), 'html.parser')
         
-        # Correctly extract posted date using datetime attribute
-        date_element = soup.find('time', datetime=True)
-        posted_date = date_element['datetime'] if date_element and 'datetime' in date_element.attrs else 'N/A'
+        try:
+            title_element = soup.select_one('h2.chakra-text.css-8rdtm5[data-testid="searchSerpJobTitle"] > a')
+            if not title_element:
+                continue
+            
+            job_title = title_element.text.strip()
+            job_url = "https://www.simplyhired.com" + title_element['href']
+            company = soup.select_one('span[data-testid="companyName"]').text.strip()
+            location = soup.select_one('span[data-testid="searchSerpJobLocation"]').text.strip()
+            
+            jobs.append([job_title, company, location, job_url])
+        
+        except Exception as e:
+            print(f"Error extracting job details: {e}")
 
-        # Write detailed information to output CSV
-        writer.writerow({
-            'Title': row['Title'],
-            'Company': row['Company'],
-            'Job Type': row['Job Type'],
-            'URL': row['URL'],
-            'Location': location,
-            'Benefits': benefits,
-            'Posted Date': posted_date
-        })
+    return jobs
 
-# Close WebDriver
+# Function to get the pagination links
+def get_pagination_links():
+    soup = BeautifulSoup(driver.page_source, 'html.parser')
+    pagination_links = soup.select('nav[aria-label="pagination"] a.chakra-link')
+    pages = [link['href'] for link in pagination_links if link['aria-label'] != 'Next page']
+    return pages
+
+# Scrape all pages
+all_jobs = []
+current_page = base_url
+while current_page:
+    all_jobs.extend(scrape_page(current_page))
+    pagination_links = get_pagination_links()
+    current_page = pagination_links.pop(0) if pagination_links else None
+
+# Close the WebDriver
 driver.quit()
 
-print(f"Detailed job information saved to {output_csv_file}")
+# Save to CSV
+with open('./backend/simplyhired/simplyhired_jobs.csv', mode='w', newline='') as file:
+    writer = csv.writer(file)
+    writer.writerow(['Title', 'Company', 'Location', 'URL'])
+    writer.writerows(all_jobs)
+
+print(f"Extracted {len(all_jobs)} jobs to simplyhired_jobs.csv")

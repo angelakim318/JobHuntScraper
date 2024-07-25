@@ -1,69 +1,64 @@
 import csv
-from selenium import webdriver
-from selenium.webdriver.safari.service import Service
-from selenium.webdriver.safari.options import Options
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 import time
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.safari.options import Options
+from bs4 import BeautifulSoup
 
-# Define URL for job search
-url = 'https://stackoverflow.jobs/search/jobs?searchTerm=software%20engineer&location=Philadelphia,%20USA'
+# Define the URL and search parameters
+url = 'https://www.glassdoor.com/Job/philadelphia-pa-us-software-engineer-jobs-SRCH_IL.0,18_IC1152672_KO19,36.htm'
 
-# Define Safari options
-safari_options = Options()
+# Set up Safari options to include user agent
+options = Options()
+options.add_argument("user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 Safari/605.1.15")
 
-# Initialize WebDriver with Safari options
-driver = webdriver.Safari(service=Service(), options=safari_options)
+# Initialize WebDriver
+driver = webdriver.Safari(options=options)
 driver.get(url)
+time.sleep(5)  # Wait for the page to load
 
-# Wait for the job listings to load
-time.sleep(5)  
+# Scroll to load all job listings
+for i in range(10):
+    ActionChains(driver).send_keys(Keys.END).perform()
+    time.sleep(2 + i)  # Increase delay to mimic human behavior
 
-# Create CSV file to store job listings
-csv_file = './backend/stackoverflow_jobs/stackoverflow_jobs.csv'
+# Parse the page source with BeautifulSoup
+html = driver.page_source
+soup = BeautifulSoup(html, 'html.parser')
+
+# Define columns for the CSV
 fieldnames = ['Title', 'Company', 'Location', 'Posted Date', 'URL']
-with open(csv_file, mode='w', newline='') as file:
+
+# Open the output CSV file
+with open('./backend/glassdoor/glassdoor_jobs.csv', mode='w', newline='') as file:
     writer = csv.DictWriter(file, fieldnames=fieldnames)
     writer.writeheader()
 
-    while True:
-        # Get the job listings on the current page
-        job_cards = driver.find_elements(By.CSS_SELECTOR, 'a.job-list-item')
+    # Find all job listings
+    job_cards = soup.find_all('li', class_='jobListItem')  # Corrected class name
 
-        if not job_cards:
-            print("No job cards found on the page.")
-            #print(driver.page_source)  # Print the HTML source of the page for debugging
-
-        for job_card in job_cards:
-            try:
-                title = job_card.find_element(By.CSS_SELECTOR, 'div.job-name').text
-                company = job_card.find_element(By.CSS_SELECTOR, 'div.c-name').text
-                location = job_card.find_element(By.CSS_SELECTOR, 'div.location').text
-                posted_date = job_card.find_element(By.CSS_SELECTOR, 'div.posted').text
-                job_url = job_card.get_attribute('href')
-
-                writer.writerow({
-                    'Title': title,
-                    'Company': company,
-                    'Location': location,
-                    'Posted Date': posted_date,
-                    'URL': job_url
-                })
-                print(f"Job found: {title}, {company}, {location}, {posted_date}, {job_url}")
-            except Exception as e:
-                print(f"Error extracting data for a job card: {e}")
-
+    for job in job_cards:
         try:
-            # Click "Next" button to go to the next page of results
-            next_button = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.CSS_SELECTOR, 'a.page-link[aria-label="Go to next page"]'))
-            )
-            next_button.click()
-            time.sleep(5)  
-        except Exception as e:
-            print(f"No more 'Next' button found or error occurred: {e}")
-            break
+            title = job.find('a', class_='jobTitle').text.strip()  # Corrected class name
+            company = job.find('span', class_='compactEmployerName').text.strip()  # Corrected class name
+            location = job.find('div', class_='jobCard_location').text.strip()  # Corrected class name
+            posted_date = job.find('div', class_='jobCard_listingAge').text.strip()  # Corrected class name
+            url = job.find('a', class_='jobTitle')['href']  # Corrected class name
+        except AttributeError:
+            continue
 
+        # Write to CSV
+        writer.writerow({
+            'Title': title,
+            'Company': company,
+            'Location': location,
+            'Posted Date': posted_date,
+            'URL': 'https://www.glassdoor.com' + url  # Ensure the URL is complete
+        })
+
+# Close the WebDriver
 driver.quit()
-print(f"Data saved to {csv_file}")
+
+print("Data saved to ./backend/glassdoor/glassdoor_jobs.csv")
