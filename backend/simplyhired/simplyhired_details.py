@@ -31,7 +31,7 @@ def scrape_job_details(url):
     location_elem = soup.find_all('span', {'data-testid': 'detailText'})
     job_details['Location'] = location_elem[1].text.strip() if len(location_elem) > 1 else 'N/A'
     
-    # Find the posted date element
+    # Find posted date element
     posted_date_elem = soup.find('span', {'data-testid': 'viewJobBodyJobPostingTimestamp'})
     if posted_date_elem:
         date_text_elem = posted_date_elem.find('span', {'data-testid': 'detailText'})
@@ -49,7 +49,7 @@ def scrape_job_details(url):
 
     return job_details
 
-# Read URLs from the simplyhired_jobs.csv
+# Read URLs from simplyhired_jobs.csv
 input_csv = './backend/simplyhired/simplyhired_jobs.csv'
 output_csv = './backend/simplyhired/simplyhired_jobs_detailed.csv'
 
@@ -66,7 +66,7 @@ with open(input_csv, newline='', encoding='utf-8') as file:
         all_job_details.append(job_details)
         time.sleep(2)  # Respectful delay between requests
 
-# Save the detailed job information to a new CSV file
+# Save detailed job information to a new CSV file
 with open(output_csv, mode='w', newline='', encoding='utf-8') as file:
     fieldnames = ['Title', 'Company', 'Location', 'Posted Date', 'Qualifications', 'Job Description', 'URL']
     writer = csv.DictWriter(file, fieldnames=fieldnames)
@@ -75,5 +75,5 @@ with open(output_csv, mode='w', newline='', encoding='utf-8') as file:
 
 print(f"Scraping completed. Job details saved to {output_csv}.")
 
-# Close the WebDriver
+# Close WebDriver
 driver.quit()

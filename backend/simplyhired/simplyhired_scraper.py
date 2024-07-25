@@ -15,16 +15,16 @@ base_url = "https://www.simplyhired.com"
 search_query = "/search?q=software+engineer&l=Philadelphia%2C+PA"
 full_url = base_url + search_query
 
-# Function to normalize job details
+# Normalize job details
 def normalize(text):
     return ' '.join(text.split()).strip().lower()
 
-# Function to scrape a single page
+# Scrape a single page
 def scrape_page(existing_urls):
     soup = BeautifulSoup(driver.page_source, 'html.parser')
     job_list_ul = soup.find('ul', {'id': 'job-list', 'role': 'list', 'tabindex': '-1'})
     
-    # Debugging: Check if job_list_ul is found
+    # Check if job_list_ul is found
     if job_list_ul is None:
         print("No job list found.")
         return []
@@ -54,14 +54,14 @@ def scrape_page(existing_urls):
             job_list.append(job_entry)
             existing_urls.add(link)
     
-    # Debug: Print job list for the current page
+
     print(f"Jobs from the current page:")
     for job in job_list:
         print(job)
 
     return job_list
 
-# Function to get the next page URL and navigate to it
+# Get the next page URL and navigate to it
 def go_to_next_page(previous_url):
     try:
         next_button = WebDriverWait(driver, 10).until(
@@ -93,7 +93,7 @@ while True:
         break
     current_url = next_url
 
-# Save the results to a CSV file
+# Save results to a CSV file
 csv_file = './backend/simplyhired/simplyhired_jobs.csv'
 with open(csv_file, mode='w', newline='', encoding='utf-8') as file:
     writer = csv.writer(file)
@@ -102,5 +102,5 @@ with open(csv_file, mode='w', newline='', encoding='utf-8') as file:
 
 print(f"Scraping completed. {len(all_jobs)} jobs saved to {csv_file}.")
 
-# Close the WebDriver
+# Close WebDriver
 driver.quit()
