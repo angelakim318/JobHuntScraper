@@ -6,7 +6,7 @@ from selenium.webdriver.safari.options import Options
 from bs4 import BeautifulSoup
 
 # Define the URL and search parameters
-base_url = "https://www.simplyhired.com/search?q=software+engineer&l=Philadelphia%2C+PA&sr=50"
+base_url = "https://remote.co/remote-jobs/search/?search_keywords=software+engineer"
 
 # Set up Safari options to include user agent
 options = Options()
@@ -63,9 +63,9 @@ while current_page:
 driver.quit()
 
 # Save to CSV
-with open('./backend/simplyhired/simplyhired_jobs.csv', mode='w', newline='') as file:
+with open('./backend/remoteco_jobs_detailed.csv', mode='w', newline='') as file:
     writer = csv.writer(file)
     writer.writerow(['Title', 'Company', 'Location', 'URL'])
     writer.writerows(all_jobs)
 
-print(f"Extracted {len(all_jobs)} jobs to simplyhired_jobs.csv")
+print(f"Extracted {len(all_jobs)} jobs to remoteco_jobs_detailed.csv")
