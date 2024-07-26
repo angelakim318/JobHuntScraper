@@ -16,7 +16,7 @@ safari_options = Options()
 driver = webdriver.Safari(service=Service(), options=safari_options)
 
 # Define columns for CSV
-fieldnames = ['Title', 'Company', 'Location', 'Posted Date', 'URL', 'Job Description']
+fieldnames = ['Title', 'Company', 'Location', 'URL', 'Job Description']
 
 # Open input CSV file and create output CSV file
 with open(input_csv_file, mode='r', newline='') as infile, open(output_csv_file, mode='w', newline='') as outfile:
@@ -42,7 +42,6 @@ with open(input_csv_file, mode='r', newline='') as infile, open(output_csv_file,
             'Title': row['Title'],
             'Company': row['Company'],
             'Location': row['Location'],
-            'Posted Date': row['Posted Date'],
             'URL': row['URL'],
             'Job Description': job_description
         })
