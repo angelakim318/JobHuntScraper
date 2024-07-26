@@ -33,15 +33,23 @@ with open(input_csv_file, mode='r', newline='') as infile, open(output_csv_file,
         html = driver.page_source
         soup = BeautifulSoup(html, 'html.parser')
 
-        # Extract job description
-        job_details_div = soup.find('div', id='job-details')
-        job_description = ' '.join(p.get_text(strip=True) for p in job_details_div.find_all('p')) if job_details_div else 'N/A'
+        # Extract job details
+        job_details_div = soup.find('div', class_='job-company col-lg-9 v2 mb--26')
+        title_elem = job_details_div.find('div', class_='title mb-0 fs-16') if job_details_div else None
+        company_elem = job_details_div.find('div', class_='name color-01') if job_details_div else None
+        location_elem = job_details_div.find('div', class_='location color-01') if job_details_div else None
+        job_description_div = soup.find('div', class_='col-lg-9 middlecol')
+        
+        title = title_elem.get_text(strip=True) if title_elem else 'N/A'
+        company = company_elem.get_text(strip=True) if company_elem else 'N/A'
+        location = location_elem.get_text(strip=True) if location_elem else 'N/A'
+        job_description = ' '.join(p.get_text(strip=True) for p in job_description_div.find_all('p')) if job_description_div else 'N/A'
 
         # Write detailed information to output CSV
         writer.writerow({
-            'Title': row['Title'],
-            'Company': row['Company'],
-            'Location': row['Location'],
+            'Title': title,
+            'Company': company,
+            'Location': location,
             'URL': row['URL'],
             'Job Description': job_description
         })
