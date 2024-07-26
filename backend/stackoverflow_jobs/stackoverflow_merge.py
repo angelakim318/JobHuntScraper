@@ -12,27 +12,23 @@ detailed_df = pd.read_csv(detailed_csv_path)
 main_df.columns = main_df.columns.str.lower()
 detailed_df.columns = detailed_df.columns.str.lower()
 
-print("Main DataFrame columns:", main_df.columns)
-print("Detailed DataFrame columns:", detailed_df.columns)
-
-# Merge DataFrames on the 'url' column
+# Merge DataFrames on 'url' column
 merged_df = pd.merge(main_df, detailed_df, on='url', how='left')
 
-# Drop the duplicate columns with _x suffixes
-merged_df.drop(columns=['title_x', 'company_x', 'location_x', 'posted date_x'], inplace=True)
+# Drop duplicate columns with _x suffixes
+merged_df.drop(columns=['title_x', 'company_x', 'location_x'], inplace=True)
 
-# Rename the remaining columns to remove the _y suffixes
+# Rename remaining columns to remove _y suffixes
 merged_df.rename(columns={
     'title_y': 'title',
     'company_y': 'company',
-    'location_y': 'location',
-    'posted date_y': 'posted date'
+    'location_y': 'location'
 }, inplace=True)
 
-# Fill missing values in the 'posted date' column with 'N/A'
-merged_df['posted date'] = merged_df['posted date'].fillna('N/A')
+# Fill missing values with 'N/A'
+merged_df.fillna('N/A', inplace=True)
 
-# Save the merged DataFrame to a new CSV file
+# Save merged DataFrame to a new CSV file
 merged_csv_path = 'backend/stackoverflow_jobs/stackoverflow_combined.csv'
 merged_df.to_csv(merged_csv_path, index=False)
 

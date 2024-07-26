@@ -27,7 +27,7 @@ with open(input_csv_file, mode='r', newline='') as infile, open(output_csv_file,
     for row in reader:
         job_url = row['URL']
         driver.get(job_url)
-        time.sleep(5)  # Wait for the page to load
+        time.sleep(5)  # Wait for page to load
 
         # Get page source and parse it
         html = driver.page_source

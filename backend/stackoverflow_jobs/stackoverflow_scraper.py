@@ -91,7 +91,7 @@ def go_to_next_page(previous_url):
                     EC.element_to_be_clickable((By.CSS_SELECTOR, "a[aria-label='Go to next page']"))
                 )
                 next_button.click()
-                time.sleep(3)  # Allow time for the page to load
+                time.sleep(3)  # Wait for page to load
                 new_url = driver.current_url
                 if new_url != previous_url:
                     return new_url
@@ -114,14 +114,14 @@ current_url = driver.current_url
 while True:
     print(f"Scraping page: {driver.current_url}")
     
-    # Wait for the job cards to be present
+    # Wait for job cards to be present
     WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.CLASS_NAME, "job-list-item"))
     )
     
     jobs = scrape_page(seen_urls)
     all_jobs.extend(jobs)
-    time.sleep(2)  # Respectful delay between requests
+    time.sleep(2)  # Delay between requests
     next_url = go_to_next_page(current_url)
     if not next_url or next_url == current_url:
         break
