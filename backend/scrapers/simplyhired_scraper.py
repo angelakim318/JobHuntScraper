@@ -60,26 +60,14 @@ def scrape_page(existing_urls):
     return job_list
 
 # Get the next page URL and navigate to it
-def go_to_next_page(previous_url):
+def go_to_next_page():
     try:
-        # Retry logic for handling stale element exceptions
-        attempts = 3
-        while attempts > 0:
-            try:
-                next_button = WebDriverWait(driver, 10).until(
-                    EC.element_to_be_clickable((By.CSS_SELECTOR, "a[data-testid='pageNumberBlockNext']"))
-                )
-                next_button.click()
-                time.sleep(3)  # Allow time for the page to load
-                new_url = driver.current_url
-                if new_url != previous_url:
-                    return new_url
-                return False
-            except Exception as e:
-                print(f"Retrying next page click due to: {e}")
-                attempts -= 1
-                if attempts == 0:
-                    raise
+        next_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, "a[data-testid='pageNumberBlockNext']"))
+        )
+        next_button.click()
+        time.sleep(3)  # Allow time for the page to load
+        return True
     except Exception as e:
         print("No next page found or failed to click next:", e)
         return False
@@ -87,21 +75,25 @@ def go_to_next_page(previous_url):
 # Scrape multiple pages
 all_jobs = []
 seen_urls = set()
+visited_urls = set()
 driver.get(full_url)
-current_url = driver.current_url
 
 while True:
-    print(f"Scraping page: {driver.current_url}")
+    current_url = driver.current_url
+    if current_url in visited_urls:
+        print("Reached a previously visited URL, stopping the scraper.")
+        break
+    visited_urls.add(current_url)
+
+    print(f"Scraping page: {current_url}")
     jobs = scrape_page(seen_urls)
     all_jobs.extend(jobs)
-    time.sleep(2)  # Respectful delay between requests
-    next_url = go_to_next_page(current_url)
-    if not next_url or next_url == current_url:
+    time.sleep(2)  # Delay between requests
+    if not go_to_next_page():
         break
-    current_url = next_url
 
 # Save results to a CSV file
-csv_file = './backend/simplyhired/simplyhired_jobs.csv'
+csv_file = './backend/data/simplyhired_jobs.csv'
 with open(csv_file, mode='w', newline='', encoding='utf-8') as file:
     writer = csv.writer(file)
     writer.writerow(['Title', 'Company', 'Location', 'URL'])

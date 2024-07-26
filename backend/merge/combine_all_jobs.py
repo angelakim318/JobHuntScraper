@@ -1,9 +1,9 @@
 import pandas as pd
 
 # Paths to the combined CSV files
-remoteco_combined_path = 'backend/remoteco/remoteco_combined.csv'
-simplyhired_combined_path = 'backend/simplyhired/simplyhired_combined.csv'
-stackoverflow_combined_path = 'backend/stackoverflow_jobs/stackoverflow_combined.csv'
+remoteco_combined_path = 'backend/data/remoteco_combined.csv'
+simplyhired_combined_path = 'backend/data/simplyhired_combined.csv'
+stackoverflow_combined_path = 'backend/data/stackoverflow_combined.csv'
 
 # Load each combined CSV file into a DataFrame
 remoteco_df = pd.read_csv(remoteco_combined_path)
@@ -17,7 +17,7 @@ final_combined_df = pd.concat([remoteco_df, simplyhired_df, stackoverflow_df], i
 final_combined_df.fillna('N/A', inplace=True)
 
 # Save final combined DataFrame to a new CSV file
-final_combined_csv_path = 'backend/final_combined_jobs.csv'
+final_combined_csv_path = 'backend/data/final_combined_jobs.csv'
 final_combined_df.to_csv(final_combined_csv_path, index=False)
 
 print(f"Successfully combined all job listings into {final_combined_csv_path}")

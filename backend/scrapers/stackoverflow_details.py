@@ -6,8 +6,8 @@ import time
 from bs4 import BeautifulSoup
 
 # Read existing CSV file
-input_csv_file = './backend/stackoverflow_jobs/stackoverflow_jobs.csv'
-output_csv_file = './backend/stackoverflow_jobs/stackoverflow_jobs_detailed.csv'
+input_csv_file = './backend/data/stackoverflow_jobs.csv'
+output_csv_file = './backend/data/stackoverflow_jobs_detailed.csv'
 
 # Define Safari options
 safari_options = Options()

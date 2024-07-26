@@ -128,7 +128,7 @@ while True:
     current_url = next_url
 
 # Save results to a CSV file
-csv_file = './backend/stackoverflow_jobs/stackoverflow_jobs.csv'
+csv_file = './backend/data/stackoverflow_jobs.csv'
 with open(csv_file, mode='w', newline='', encoding='utf-8') as file:
     writer = csv.writer(file)
     writer.writerow(['Title', 'Company', 'Location', 'URL'])

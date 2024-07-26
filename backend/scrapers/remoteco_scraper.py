@@ -69,7 +69,7 @@ for job_element in job_elements:
     })
 
 # Save data to a CSV file
-csv_file = './backend/remoteco/remoteco_jobs.csv'
+csv_file = './backend/data/remoteco_jobs.csv'
 fieldnames = ['Title', 'Company', 'Job Type', 'URL']
 with open(csv_file, mode='w', newline='') as file:
     writer = csv.DictWriter(file, fieldnames=fieldnames)

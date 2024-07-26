@@ -50,8 +50,8 @@ def scrape_job_details(url):
     return job_details
 
 # Read URLs from simplyhired_jobs.csv
-input_csv = './backend/simplyhired/simplyhired_jobs.csv'
-output_csv = './backend/simplyhired/simplyhired_jobs_detailed.csv'
+input_csv = './backend/data/simplyhired_jobs.csv'
+output_csv = './backend/data/simplyhired_jobs_detailed.csv'
 
 # Initialize the list to hold job details
 all_job_details = []

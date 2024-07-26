@@ -15,8 +15,8 @@ safari_options = Options()
 driver = webdriver.Safari(service=Service(), options=safari_options)
 
 # Read the existing CSV file with job URLs
-input_csv = './backend/remoteco/remoteco_jobs.csv'
-output_csv = './backend/remoteco/remoteco_jobs_detailed.csv'
+input_csv = './backend/data/remoteco_jobs.csv'
+output_csv = './backend/data/remoteco_jobs_detailed.csv'
 
 # Create a list to store detailed job information
 detailed_jobs = []
