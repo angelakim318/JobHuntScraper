@@ -6,135 +6,139 @@ from bs4 import BeautifulSoup
 import csv
 import time
 
-# Setup Selenium WebDriver for Safari
-driver = webdriver.Safari()
+def scrape_stackoverflow_jobs(output_csv='./backend/data/stackoverflow_jobs.csv'):
+    # Setup Selenium WebDriver for Safari
+    driver = webdriver.Safari()
 
-# Define the URL with search parameters
-url = "https://stackoverflow.jobs/search/jobs?searchTerm=software%20engineer&location=Philadelphia,%20USA"
+    # Define the URL with search parameters
+    url = "https://stackoverflow.jobs/search/jobs?searchTerm=software%20engineer&location=Philadelphia,%20USA"
 
-# Normalize job details
-def normalize(text):
-    return ' '.join(text.split()).strip()
+    # Normalize job details
+    def normalize(text):
+        return ' '.join(text.split()).strip()
 
-# Scrape job details from the listing
-def scrape_job_listing(soup):
-    job_details_list = []
+    # Scrape job details from the listing
+    def scrape_job_listing(soup):
+        job_details_list = []
 
-    # Find the div that contains the job cards
-    job_cards_container = soup.find('div', class_='job-cards')
-    if not job_cards_container:
-        print("No job cards container found.")
+        # Find the div that contains the job cards
+        job_cards_container = soup.find('div', class_='job-cards')
+        if not job_cards_container:
+            print("No job cards container found.")
+            return job_details_list
+
+        # Find all job cards within the container
+        job_cards = job_cards_container.find_all('a', class_='job-list-item')
+        if not job_cards:
+            print("No job cards found.")
+            return job_details_list
+
+        for job in job_cards:
+            title_elem = job.find('div', class_='job-name')
+            company_elem = job.find('div', class_='c-name')
+            location_elem = job.find('div', class_='location')
+            link_elem = job.get('href')
+
+            if title_elem:
+                title = normalize(title_elem.text)
+            else:
+                title = 'N/A'
+
+            company = normalize(company_elem.text) if company_elem else 'N/A'
+            location = normalize(location_elem.text) if location_elem else 'N/A'
+            link = link_elem if link_elem else 'N/A'
+
+            job_details_list.append({
+                'title': title,
+                'company': company,
+                'location': location,
+                'link': link,
+            })
+
         return job_details_list
 
-    # Find all job cards within the container
-    job_cards = job_cards_container.find_all('a', class_='job-list-item')
-    if not job_cards:
-        print("No job cards found.")
-        return job_details_list
+    # Scrape a single page
+    def scrape_page(existing_urls):
+        soup = BeautifulSoup(driver.page_source, 'html.parser')
 
-    for job in job_cards:
-        title_elem = job.find('div', class_='job-name')
-        company_elem = job.find('div', class_='c-name')
-        location_elem = job.find('div', class_='location')
-        link_elem = job.get('href')
+        job_details_list = scrape_job_listing(soup)
 
-        if title_elem:
-            title = normalize(title_elem.text)
-        else:
-            title = 'N/A'
+        job_list = []
 
-        company = normalize(company_elem.text) if company_elem else 'N/A'
-        location = normalize(location_elem.text) if location_elem else 'N/A'
-        link = link_elem if link_elem else 'N/A'
+        for job in job_details_list:
+            job_entry = [job['title'], job['company'], job['location'], job['link']]
 
-        job_details_list.append({
-            'title': title,
-            'company': company,
-            'location': location,
-            'link': link,
-        })
+            # Check for duplicates before adding
+            if job['link'] not in existing_urls:
+                job_list.append(job_entry)
+                existing_urls.add(job['link'])
+            else:
+                print(f"Duplicate job found: {job['title']}")
 
-    return job_details_list
+        print(f"Jobs from the current page:")
+        for job in job_list:
+            print(job)
 
-# Scrape a single page
-def scrape_page(existing_urls):
-    soup = BeautifulSoup(driver.page_source, 'html.parser')
+        return job_list
 
-    job_details_list = scrape_job_listing(soup)
+    # Get the next page URL and navigate to it
+    def go_to_next_page(previous_url):
+        try:
+            # Retry logic for handling stale element exceptions
+            attempts = 3
+            while attempts > 0:
+                try:
+                    next_button = WebDriverWait(driver, 10).until(
+                        EC.element_to_be_clickable((By.CSS_SELECTOR, "a[aria-label='Go to next page']"))
+                    )
+                    next_button.click()
+                    time.sleep(3)  # Wait for page to load
+                    new_url = driver.current_url
+                    if new_url != previous_url:
+                        return new_url
+                    return False
+                except Exception as e:
+                    print(f"Retrying next page click due to: {e}")
+                    attempts -= 1
+                    if attempts == 0:
+                        raise
+        except Exception as e:
+            print("No next page found or failed to click next:", e)
+            return False
 
-    job_list = []
+    # Scrape multiple pages
+    all_jobs = []
+    seen_urls = set()
+    driver.get(url)
+    current_url = driver.current_url
 
-    for job in job_details_list:
-        job_entry = [job['title'], job['company'], job['location'], job['link']]
+    while True:
+        print(f"Scraping page: {driver.current_url}")
 
-        # Check for duplicates before adding
-        if job['link'] not in existing_urls:
-            job_list.append(job_entry)
-            existing_urls.add(job['link'])
-        else:
-            print(f"Duplicate job found: {job['title']}")
+        # Wait for job cards to be present
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.CLASS_NAME, "job-list-item"))
+        )
 
-    print(f"Jobs from the current page:")
-    for job in job_list:
-        print(job)
+        jobs = scrape_page(seen_urls)
+        all_jobs.extend(jobs)
+        time.sleep(2)  # Delay between requests
+        next_url = go_to_next_page(current_url)
+        if not next_url or next_url == current_url:
+            break
+        current_url = next_url
 
-    return job_list
+    # Save results to a CSV file
+    with open(output_csv, mode='w', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+        writer.writerow(['Title', 'Company', 'Location', 'URL'])
+        writer.writerows(all_jobs)
 
-# Get the next page URL and navigate to it
-def go_to_next_page(previous_url):
-    try:
-        # Retry logic for handling stale element exceptions
-        attempts = 3
-        while attempts > 0:
-            try:
-                next_button = WebDriverWait(driver, 10).until(
-                    EC.element_to_be_clickable((By.CSS_SELECTOR, "a[aria-label='Go to next page']"))
-                )
-                next_button.click()
-                time.sleep(3)  # Wait for page to load
-                new_url = driver.current_url
-                if new_url != previous_url:
-                    return new_url
-                return False
-            except Exception as e:
-                print(f"Retrying next page click due to: {e}")
-                attempts -= 1
-                if attempts == 0:
-                    raise
-    except Exception as e:
-        print("No next page found or failed to click next:", e)
-        return False
+    print(f"Scraping completed. {len(all_jobs)} jobs saved to {output_csv}.")
 
-# Scrape multiple pages
-all_jobs = []
-seen_urls = set()
-driver.get(url)
-current_url = driver.current_url
+    # Close WebDriver
+    driver.quit()
 
-while True:
-    print(f"Scraping page: {driver.current_url}")
-    
-    # Wait for job cards to be present
-    WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.CLASS_NAME, "job-list-item"))
-    )
-    
-    jobs = scrape_page(seen_urls)
-    all_jobs.extend(jobs)
-    time.sleep(2)  # Delay between requests
-    next_url = go_to_next_page(current_url)
-    if not next_url or next_url == current_url:
-        break
-    current_url = next_url
-
-# Save results to a CSV file
-csv_file = './backend/data/stackoverflow_jobs.csv'
-with open(csv_file, mode='w', newline='', encoding='utf-8') as file:
-    writer = csv.writer(file)
-    writer.writerow(['Title', 'Company', 'Location', 'URL'])
-    writer.writerows(all_jobs)
-
-print(f"Scraping completed. {len(all_jobs)} jobs saved to {csv_file}.")
-
-# Close WebDriver
-driver.quit()
+# If script is run directly, call the function
+if __name__ == '__main__':
+    scrape_stackoverflow_jobs()
