@@ -19,6 +19,8 @@ def get_jobs():
             # print("CSV file found")  
             df = pd.read_csv(csv_path)
             # print(f"CSV Loaded: {df.head()}")  
+            # Replace NaN values with 'N/A'
+            df.fillna('N/A', inplace=True)
             return jsonify(df.to_dict(orient='records'))
         else:
             # print("CSV file not found")  
@@ -39,6 +41,8 @@ def search_jobs():
         if os.path.exists(csv_path):
             # print("CSV file found")  
             df = pd.read_csv(csv_path)
+            # Replace NaN values with 'N/A'
+            df.fillna('N/A', inplace=True)
             results = df[df['title'].str.contains(query, case=False, na=False)]
             # print(f"Search Results: {results.head()}")  
             return jsonify(results.to_dict(orient='records'))

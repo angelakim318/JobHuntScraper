@@ -2,6 +2,7 @@ import pandas as pd
 import os
 from sqlalchemy import create_engine
 from models.models import Job, DATABASE_URL, SessionLocal
+from sqlalchemy.exc import SQLAlchemyError
 
 def combine_all_jobs():
     # Get the absolute path of the current script
@@ -12,11 +13,13 @@ def combine_all_jobs():
     simplyhired_combined_path = os.path.join(script_dir, '..', 'data', 'simplyhired_combined.csv')
     stackoverflow_combined_path = os.path.join(script_dir, '..', 'data', 'stackoverflow_combined.csv')
     final_combined_csv_path = os.path.join(script_dir, '..', 'data', 'final_combined_jobs.csv')
-    # print(f"Running combine script in {os.getcwd()}")
     
     # Load each combined CSV file into a DataFrame
+    # print(f"Loading {remoteco_combined_path}")
     remoteco_df = pd.read_csv(remoteco_combined_path)
+    # print(f"Loading {simplyhired_combined_path}")
     simplyhired_df = pd.read_csv(simplyhired_combined_path)
+    # print(f"Loading {stackoverflow_combined_path}")
     stackoverflow_df = pd.read_csv(stackoverflow_combined_path)
 
     # Concatenate all DataFrames
@@ -29,38 +32,51 @@ def combine_all_jobs():
     os.makedirs(os.path.dirname(final_combined_csv_path), exist_ok=True)
 
     # Save final combined DataFrame to a new CSV file
+    # print(f"Saving final combined CSV to {final_combined_csv_path}")
     final_combined_df.to_csv(final_combined_csv_path, index=False)
-
-    # print(f"Successfully combined all job listings into {final_combined_csv_path}")
+    # print("Successfully saved final combined CSV")
 
     # Load data into PostgreSQL database
     engine = create_engine(DATABASE_URL)
     session = SessionLocal()
     
-    jobs_data = final_combined_df.to_dict(orient='records')
+    try:
+        # Clear existing data
+        session.query(Job).delete()
+        session.commit()
+        # print("Cleared existing data from the jobs table")
 
-    for job_data in jobs_data:
-        # Convert 'N/A' to None for posted_date
-        posted_date = pd.to_datetime(job_data['posted date'], errors='coerce')
-        job_data['posted date'] = posted_date.date() if not pd.isna(posted_date) else None
+        # Insert new data
+        jobs_data = final_combined_df.to_dict(orient='records')
+
+        for job_data in jobs_data:
+            # Convert 'N/A' to None and handle NaT for posted_date
+            job = Job(
+                url=job_data['url'] if job_data['url'] != 'N/A' else None,
+                title=job_data['title'] if job_data['title'] != 'N/A' else None,
+                company=job_data['company'] if job_data['company'] != 'N/A' else None,
+                job_type=job_data['job type'] if job_data['job type'] != 'N/A' else None,
+                location=job_data['location'] if job_data['location'] != 'N/A' else None,
+                benefits=job_data['benefits'] if job_data['benefits'] != 'N/A' else None,
+                posted_date=pd.to_datetime(job_data['posted date'], errors='coerce') if job_data['posted date'] != 'N/A' else None,
+                qualifications=job_data['qualifications'] if job_data['qualifications'] != 'N/A' else None,
+                job_description=job_data['job description'] if job_data['job description'] != 'N/A' else None
+            )
+            
+            # Ensure posted_date is None if it is NaT
+            if job.posted_date and pd.isna(job.posted_date):
+                job.posted_date = None
+
+            session.add(job)
         
-        job = Job(
-            url=job_data['url'],
-            title=job_data['title'],
-            company=job_data['company'],
-            job_type=job_data['job type'],
-            location=job_data['location'],
-            benefits=job_data['benefits'],
-            posted_date=job_data['posted date'],
-            qualifications=job_data['qualifications'],
-            job_description=job_data['job description']
-        )
-        session.add(job)
-    session.commit()
-    session.close()
+        session.commit()
+        print("New data inserted into the jobs table")
 
-    # print("Data successfully loaded into the database.")
+    except SQLAlchemyError as e:
+        session.rollback()
+        print(f"Error occurred: {e}")
+    finally:
+        session.close()
 
-# If script is run directly, call the function
 if __name__ == '__main__':
     combine_all_jobs()
