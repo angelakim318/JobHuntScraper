@@ -4,8 +4,15 @@ from selenium.webdriver.safari.service import Service
 from selenium.webdriver.safari.options import Options
 import time
 from bs4 import BeautifulSoup
+import os
 
-def scrape_stackoverflow_job_details(input_csv='./backend/data/stackoverflow_jobs.csv', output_csv='./backend/data/stackoverflow_jobs_detailed.csv'):
+def scrape_stackoverflow_job_details():
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    input_csv = os.path.join(script_dir, '..', 'data', 'stackoverflow_jobs.csv')
+    output_csv = os.path.join(script_dir, '..', 'data', 'stackoverflow_jobs_detailed.csv')
+
+    print(f"Running stackoverflow script in {os.getcwd()}")
+
     # Define Safari options
     safari_options = Options()
 
@@ -14,6 +21,9 @@ def scrape_stackoverflow_job_details(input_csv='./backend/data/stackoverflow_job
 
     # Define columns for CSV
     fieldnames = ['Title', 'Company', 'Location', 'URL', 'Job Description']
+
+    # Ensure the directory exists
+    os.makedirs(os.path.dirname(output_csv), exist_ok=True)
 
     # Open input CSV file and create output CSV file
     with open(input_csv, mode='r', newline='') as infile, open(output_csv, mode='w', newline='') as outfile:

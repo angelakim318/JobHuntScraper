@@ -5,8 +5,14 @@ from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 import csv
 import time
+import os
 
-def scrape_stackoverflow_jobs(output_csv='./backend/data/stackoverflow_jobs.csv'):
+def scrape_stackoverflow_jobs():
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    output_csv = os.path.join(script_dir, '..', 'data', 'stackoverflow_jobs.csv')
+
+    print(f"Running stackoverflow script in {os.getcwd()}")
+
     # Setup Selenium WebDriver for Safari
     driver = webdriver.Safari()
 
@@ -127,6 +133,9 @@ def scrape_stackoverflow_jobs(output_csv='./backend/data/stackoverflow_jobs.csv'
         if not next_url or next_url == current_url:
             break
         current_url = next_url
+
+    # Ensure the directory exists
+    os.makedirs(os.path.dirname(output_csv), exist_ok=True)
 
     # Save results to a CSV file
     with open(output_csv, mode='w', newline='', encoding='utf-8') as file:

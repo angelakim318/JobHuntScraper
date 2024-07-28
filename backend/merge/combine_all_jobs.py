@@ -1,6 +1,18 @@
 import pandas as pd
+import os
 
-def combine_all_jobs(remoteco_combined_path='backend/data/remoteco_combined.csv', simplyhired_combined_path='backend/data/simplyhired_combined.csv', stackoverflow_combined_path='backend/data/stackoverflow_combined.csv', final_combined_csv_path='backend/data/final_combined_jobs.csv'):
+def combine_all_jobs():
+    # Get the absolute path of the current script
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    # Construct the full paths to the CSV files relative to the project's root
+    remoteco_combined_path = os.path.join(script_dir, '..', 'data', 'remoteco_combined.csv')
+    simplyhired_combined_path = os.path.join(script_dir, '..', 'data', 'simplyhired_combined.csv')
+    stackoverflow_combined_path = os.path.join(script_dir, '..', 'data', 'stackoverflow_combined.csv')
+    final_combined_csv_path = os.path.join(script_dir, '..', 'data', 'final_combined_jobs.csv')
+
+    print(f"Running combine script in {os.getcwd()}")
+    
     # Load each combined CSV file into a DataFrame
     remoteco_df = pd.read_csv(remoteco_combined_path)
     simplyhired_df = pd.read_csv(simplyhired_combined_path)
@@ -11,6 +23,9 @@ def combine_all_jobs(remoteco_combined_path='backend/data/remoteco_combined.csv'
 
     # Replace NaN values with 'N/A'
     final_combined_df.fillna('N/A', inplace=True)
+
+    # Ensure the directory exists
+    os.makedirs(os.path.dirname(final_combined_csv_path), exist_ok=True)
 
     # Save final combined DataFrame to a new CSV file
     final_combined_df.to_csv(final_combined_csv_path, index=False)

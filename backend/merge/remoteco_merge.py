@@ -1,6 +1,14 @@
 import pandas as pd
+import os 
 
-def merge_remoteco_files(main_csv_path='backend/data/remoteco_jobs.csv', detailed_csv_path='backend/data/remoteco_jobs_detailed.csv', merged_csv_path='backend/data/remoteco_combined.csv'):
+def merge_remoteco_files():
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    main_csv_path = os.path.join(script_dir, '..', 'data', 'remoteco_jobs.csv')
+    detailed_csv_path = os.path.join(script_dir, '..', 'data', 'remoteco_jobs_detailed.csv')
+    merged_csv_path = os.path.join(script_dir, '..', 'data', 'remoteco_combined.csv')
+
+    print(f"Running remoteco script in {os.getcwd()}")
+    
     # Load main job listings CSV file
     main_df = pd.read_csv(main_csv_path)
 
@@ -26,6 +34,9 @@ def merge_remoteco_files(main_csv_path='backend/data/remoteco_jobs.csv', detaile
 
     # Fill missing values with 'N/A'
     merged_df.fillna('N/A', inplace=True)
+
+    # Ensure the directory exists
+    os.makedirs(os.path.dirname(merged_csv_path), exist_ok=True)
 
     # Save merged DataFrame to a new CSV file
     merged_df.to_csv(merged_csv_path, index=False)

@@ -7,8 +7,15 @@ from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 import time
 import csv
+import os
 
-def scrape_remoteco_job_details(input_csv='./backend/data/remoteco_jobs.csv', output_csv='./backend/data/remoteco_jobs_detailed.csv'):
+def scrape_remoteco_job_details():
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    input_csv = os.path.join(script_dir, '..', 'data', 'remoteco_jobs.csv')
+    output_csv = os.path.join(script_dir, '..', 'data', 'remoteco_jobs_detailed.csv')
+    
+    print(f"Running remoteco script in {os.getcwd()}")
+    
     # Define Safari options
     safari_options = Options()
 
@@ -60,6 +67,9 @@ def scrape_remoteco_job_details(input_csv='./backend/data/remoteco_jobs.csv', ou
         })
 
         print(f"Scraped details for job: {title}")
+
+    # Ensure the directory exists
+    os.makedirs(os.path.dirname(output_csv), exist_ok=True)
 
     # Save detailed job information to a new CSV file
     fieldnames = ['Title', 'Company', 'Job Type', 'URL', 'Location', 'Benefits', 'Posted Date']

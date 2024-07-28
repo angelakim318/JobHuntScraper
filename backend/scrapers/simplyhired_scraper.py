@@ -5,8 +5,14 @@ from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 import csv
 import time
+import os
 
-def scrape_simplyhired_jobs(output_csv='./backend/data/simplyhired_jobs.csv'):
+def scrape_simplyhired_jobs():
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    output_csv = os.path.join(script_dir, '..', 'data', 'simplyhired_jobs.csv')
+
+    print(f"Running simplyhired script in {os.getcwd()}")
+
     # Setup Selenium WebDriver for Safari
     driver = webdriver.Safari()
 
@@ -92,6 +98,9 @@ def scrape_simplyhired_jobs(output_csv='./backend/data/simplyhired_jobs.csv'):
         time.sleep(2)  # Delay between requests
         if not go_to_next_page():
             break
+
+    # Ensure the directory exists
+    os.makedirs(os.path.dirname(output_csv), exist_ok=True)
 
     # Save results to a CSV file
     with open(output_csv, mode='w', newline='', encoding='utf-8') as file:

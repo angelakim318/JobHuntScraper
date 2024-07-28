@@ -1,6 +1,14 @@
 import pandas as pd
+import os 
 
-def merge_simplyhired_files(main_csv_path='backend/data/simplyhired_jobs.csv', detailed_csv_path='backend/data/simplyhired_jobs_detailed.csv', merged_csv_path='backend/data/simplyhired_combined.csv'):
+def merge_simplyhired_files():
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    main_csv_path = os.path.join(script_dir, '..', 'data', 'simplyhired_jobs.csv')
+    detailed_csv_path = os.path.join(script_dir, '..', 'data', 'simplyhired_jobs_detailed.csv')
+    merged_csv_path = os.path.join(script_dir, '..', 'data', 'simplyhired_combined.csv')
+
+    print(f"Running simplyhired script in {os.getcwd()}")
+    
     # Load main job listings CSV file
     main_df = pd.read_csv(main_csv_path)
 
@@ -29,6 +37,9 @@ def merge_simplyhired_files(main_csv_path='backend/data/simplyhired_jobs.csv', d
 
     # Fill missing values in the 'posted date' column with 'N/A'
     merged_df['posted date'] = merged_df['posted date'].fillna('N/A')
+
+    # Ensure the directory exists
+    os.makedirs(os.path.dirname(merged_csv_path), exist_ok=True)
 
     # Save merged DataFrame to a new CSV file
     merged_df.to_csv(merged_csv_path, index=False)

@@ -4,8 +4,15 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.safari.options import Options
 from bs4 import BeautifulSoup
+import os
 
-def scrape_simplyhired_job_details(input_csv='./backend/data/simplyhired_jobs.csv', output_csv='./backend/data/simplyhired_jobs_detailed.csv'):
+def scrape_simplyhired_job_details():
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    input_csv = os.path.join(script_dir, '..', 'data', 'simplyhired_jobs.csv')
+    output_csv = os.path.join(script_dir, '..', 'data', 'simplyhired_jobs_detailed.csv')
+
+    print(f"Running simplyhired script in {os.getcwd()}")
+
     # Set up Safari options
     options = Options()
     options.add_argument("--headless")
@@ -62,6 +69,9 @@ def scrape_simplyhired_job_details(input_csv='./backend/data/simplyhired_jobs.cs
             job_details = scrape_job_details(job_url)
             all_job_details.append(job_details)
             time.sleep(2)  # Respectful delay between requests
+
+    # Ensure the directory exists
+    os.makedirs(os.path.dirname(output_csv), exist_ok=True)
 
     # Save detailed job information to a new CSV file
     with open(output_csv, mode='w', newline='', encoding='utf-8') as file:
