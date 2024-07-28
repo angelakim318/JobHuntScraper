@@ -12,8 +12,7 @@ def combine_all_jobs():
     simplyhired_combined_path = os.path.join(script_dir, '..', 'data', 'simplyhired_combined.csv')
     stackoverflow_combined_path = os.path.join(script_dir, '..', 'data', 'stackoverflow_combined.csv')
     final_combined_csv_path = os.path.join(script_dir, '..', 'data', 'final_combined_jobs.csv')
-
-    print(f"Running combine script in {os.getcwd()}")
+    # print(f"Running combine script in {os.getcwd()}")
     
     # Load each combined CSV file into a DataFrame
     remoteco_df = pd.read_csv(remoteco_combined_path)
@@ -32,7 +31,7 @@ def combine_all_jobs():
     # Save final combined DataFrame to a new CSV file
     final_combined_df.to_csv(final_combined_csv_path, index=False)
 
-    print(f"Successfully combined all job listings into {final_combined_csv_path}")
+    # print(f"Successfully combined all job listings into {final_combined_csv_path}")
 
     # Load data into PostgreSQL database
     engine = create_engine(DATABASE_URL)
@@ -60,7 +59,7 @@ def combine_all_jobs():
     session.commit()
     session.close()
 
-    print("Data successfully loaded into the database.")
+    # print("Data successfully loaded into the database.")
 
 # If script is run directly, call the function
 if __name__ == '__main__':
