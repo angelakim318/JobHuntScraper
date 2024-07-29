@@ -71,8 +71,11 @@ function App() {
           <h1>JobHuntScraper</h1>
         </div>
         <div className="container">
+          <div className="scrape-button">
+            <ScrapeButton onScrape={handleScrape} />
+            <p className="scrape-message">Note: Scraping will take around 30 minutes to complete.</p>
+          </div>
           <SearchBar onSearch={handleSearch} />
-          <ScrapeButton onScrape={handleScrape} />
           {message && <p>{message}</p>}
           <Switch>
             <Route exact path="/" component={() => <JobList jobs={jobs} />} />
