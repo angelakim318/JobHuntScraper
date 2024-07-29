@@ -1,52 +1,84 @@
-.App {
+body {
   font-family: Arial, sans-serif;
-  margin: 20px;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f4;
 }
 
-h1 {
-  color: #333;
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-form {
-  margin-bottom: 20px;
-}
-
-input {
-  padding: 10px;
-  font-size: 16px;
-  margin-right: 10px;
-}
-
-button {
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  background-color: #333;
   padding: 10px 20px;
-  font-size: 16px;
-  background-color: #007bff;
+  color: white;
+}
+
+.navbar h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.job-list {
+  margin-top: 20px;
+}
+
+.job-card {
+  padding: 10px;
+  margin: 10px 0;
+  background: #e0e0e0;
+  border-radius: 5px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.search-bar {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.search-bar input {
+  flex: 1;
+  padding: 10px;
+  margin-right: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.search-bar button {
+  padding: 10px 20px;
+  background: #333;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
 }
 
-button:hover {
-  background-color: #0056b3;
+.search-bar button:hover {
+  background: #555;
 }
 
-ul {
-  list-style-type: none;
-  padding: 0;
+.scrape-button {
+  margin-top: 20px;
+  text-align: center;
 }
 
-li {
-  margin-bottom: 20px;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 10px;
+.scrape-button button {
+  padding: 10px 20px;
+  background: #333;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-h2 {
-  margin: 0;
-  font-size: 24px;
-}
-
-p {
-  margin: 5px 0;
+.scrape-button button:hover {
+  background: #555;
 }

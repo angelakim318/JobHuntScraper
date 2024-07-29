@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import io from 'socket.io-client';
+import JobList from './components/JobList';
+import SearchBar from './components/SearchBar';
+import ScrapeButton from './components/ScrapeButton';
+import './App.css';  
 
 const socket = io('http://127.0.0.1:5000');
 
 function App() {
   const [jobs, setJobs] = useState([]);
-  const [query, setQuery] = useState('');
   const [message, setMessage] = useState('');
 
   useEffect(() => {
@@ -20,7 +23,7 @@ function App() {
     // Listen for scrape complete message
     socket.on('scrape_complete', () => {
       setMessage('Scraping completed. Fetching new job listings...');
-      fetchJobs(); // Fetch the new job listings after scraping is complete
+      fetchJobs(); // Fetch new job listings after scraping is complete
     });
 
     return () => {
@@ -39,7 +42,7 @@ function App() {
     }
   };
 
-  const handleSearch = async () => {
+  const handleSearch = async (query) => {
     try {
       const response = await axios.get('http://127.0.0.1:5000/api/jobs/search', {
         params: { query }
@@ -61,25 +64,15 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Job Listings</h1>
-      <input
-        type="text"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search job titles..."
-      />
-      <button onClick={handleSearch}>Search</button>
-      <button onClick={handleScrape}>Scrape Jobs</button>
-      {message && <p>{message}</p>}
-      <ul>
-        {jobs.map((job, index) => (
-          <li key={index}>
-            <h3>Job Title: {job.title}</h3>
-            <p>Company: {job.company}</p>
-            <p>Location: {job.location}</p>
-          </li>
-        ))}
-      </ul>
+      <div className="navbar">
+        <h1>JobHuntScraper</h1>
+      </div>
+      <div className="container">
+        <SearchBar onSearch={handleSearch} />
+        <ScrapeButton onScrape={handleScrape} />
+        {message && <p>{message}</p>}
+        <JobList jobs={jobs} />
+      </div>
     </div>
   );
 }

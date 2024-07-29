@@ -2,7 +2,9 @@ import React from 'react';
 
 const ScrapeButton = ({ onScrape }) => {
   return (
-    <button onClick={onScrape}>Scrape Jobs</button>
+    <div className="scrape-button">
+      <button onClick={onScrape}>Scrape Jobs</button>
+    </div>
   );
 };
 
