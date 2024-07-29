@@ -10,3 +10,18 @@ __pycache__/
 
 # VS Code settings
 .vscode/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Dependency directories
+node_modules/
+
+# Environment variables
+.env
+
+# Editor directories and files
+.idea/
+.DS_Store

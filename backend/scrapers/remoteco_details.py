@@ -45,10 +45,10 @@ def scrape_remoteco_job_details():
         html = driver.page_source
         soup = BeautifulSoup(html, 'html.parser')
 
-        # Extract detailed job information
-        location_element = soup.find('div', class_='location_sm')
-        location = location_element.text.strip() if location_element else 'N/A'
+        # Set location directly to 'Remote'
+        location = 'Remote'
 
+        # Extract detailed job information
         benefits_element = soup.find('div', class_='benefits_sm row')
         benefits = benefits_element.text.strip() if benefits_element else 'N/A'
 

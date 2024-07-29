@@ -1,22 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { getJobs } from '../services/api';
+// src/components/JobList.js
+import React from 'react';
 
-const JobList = () => {
-  const [jobs, setJobs] = useState([]);
-
-  useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        const response = await getJobs();
-        setJobs(response.data);
-      } catch (error) {
-        console.error('Error fetching jobs:', error);
-      }
-    };
-
-    fetchJobs();
-  }, []);
-
+const JobList = ({ jobs }) => {
   return (
     <div>
       <h1>Job Listings</h1>
