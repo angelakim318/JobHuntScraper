@@ -4,7 +4,9 @@ import io from 'socket.io-client';
 import JobList from './components/JobList';
 import SearchBar from './components/SearchBar';
 import ScrapeButton from './components/ScrapeButton';
-import './App.css';  
+import JobDetail from './components/JobDetail';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import './App.css';
 
 const socket = io('http://127.0.0.1:5000');
 
@@ -23,7 +25,7 @@ function App() {
     // Listen for scrape complete message
     socket.on('scrape_complete', () => {
       setMessage('Scraping completed. Fetching new job listings...');
-      fetchJobs(); // Fetch new job listings after scraping is complete
+      fetchJobs(); // Fetch the new job listings after scraping is complete
     });
 
     return () => {
@@ -63,17 +65,22 @@ function App() {
   };
 
   return (
-    <div className="App">
-      <div className="navbar">
-        <h1>JobHuntScraper</h1>
+    <Router>
+      <div className="App">
+        <div className="navbar">
+          <h1>JobHuntScraper</h1>
+        </div>
+        <div className="container">
+          <SearchBar onSearch={handleSearch} />
+          <ScrapeButton onScrape={handleScrape} />
+          {message && <p>{message}</p>}
+          <Switch>
+            <Route exact path="/" component={() => <JobList jobs={jobs} />} />
+            <Route path="/job/:id" component={() => <JobDetail jobs={jobs} />} />
+          </Switch>
+        </div>
       </div>
-      <div className="container">
-        <SearchBar onSearch={handleSearch} />
-        <ScrapeButton onScrape={handleScrape} />
-        {message && <p>{message}</p>}
-        <JobList jobs={jobs} />
-      </div>
-    </div>
+    </Router>
   );
 }
 

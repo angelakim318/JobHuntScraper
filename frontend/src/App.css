@@ -1,3 +1,4 @@
+/* App.css */
 body {
   font-family: Arial, sans-serif;
   margin: 0;
@@ -81,4 +82,24 @@ body {
 
 .scrape-button button:hover {
   background: #555;
+}
+
+.job-detail {
+  margin-top: 20px;
+  padding: 20px;
+  background: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.job-detail h2 {
+  margin-top: 0;
+}
+
+.job-detail p {
+  margin: 10px 0;
+}
+
+.job-detail strong {
+  display: block;
+  margin-bottom: 5px;
 }

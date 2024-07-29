@@ -1,9 +1,9 @@
 from flask import Flask, request, jsonify
-import pandas as pd
 import subprocess
 import os
 from flask_cors import CORS
 from flask_socketio import SocketIO, emit 
+from models.models import SessionLocal, Job  # Import the database session and Job model
 
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
@@ -11,35 +11,41 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 
 @app.route('/api/jobs', methods=['GET'])
 def get_jobs():
+    session = SessionLocal()
     try:
-        base_path = os.path.abspath(os.path.dirname(__file__))
-        csv_path = os.path.join(base_path, '../data/final_combined_jobs.csv')
-        if os.path.exists(csv_path):
-            df = pd.read_csv(csv_path)
-            df.fillna('N/A', inplace=True)
-            return jsonify(df.to_dict(orient='records'))
-        else:
-            return jsonify({"error": "File not found"}), 404
+        jobs = session.query(Job).all()
+        # Helper function to convert SQLAlchemy models to dictionaries
+        jobs_list = [job.to_dict() for job in jobs]
+        # Replace None with 'N/A'
+        for job in jobs_list:
+            for key, value in job.items():
+                if value is None:
+                    job[key] = 'N/A'
+        return jsonify(jobs_list)
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({"error": str(e)}), 500
+    finally:
+        session.close()
 
 @app.route('/api/jobs/search', methods=['GET'])
 def search_jobs():
+    session = SessionLocal()
     try:
         query = request.args.get('query')
-        base_path = os.path.abspath(os.path.dirname(__file__))
-        csv_path = os.path.join(base_path, '../data/final_combined_jobs.csv')
-        if os.path.exists(csv_path):
-            df = pd.read_csv(csv_path)
-            df.fillna('N/A', inplace=True)
-            results = df[df['title'].str.contains(query, case=False, na=False)]
-            return jsonify(results.to_dict(orient='records'))
-        else:
-            return jsonify({"error": "File not found"}), 404
+        jobs = session.query(Job).filter(Job.title.ilike(f'%{query}%')).all()
+        jobs_list = [job.to_dict() for job in jobs]
+        # Replace None with 'N/A'
+        for job in jobs_list:
+            for key, value in job.items():
+                if value is None:
+                    job[key] = 'N/A'
+        return jsonify(jobs_list)
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({"error": str(e)}), 500
+    finally:
+        session.close()
 
 @app.route('/api/scrape', methods=['POST'])
 def scrape():
@@ -60,12 +66,8 @@ def scrape():
         ]
 
         for task in tasks:
-            # print(f"Starting {task['name']}...")
             result = subprocess.run(["python3", os.path.join(base_path, task["script"])], capture_output=True, text=True)
-            # print(f"{task['name']} output: {result.stdout}")
-            # print(f"{task['name']} error: {result.stderr}")
             if result.returncode != 0:
-                # print(f"Error in {task['name']}: {result.stderr}")
                 socketio.emit('scrape_progress', {'message': f'Error in {task["name"]}: {result.stderr}'})
             else:
                 socketio.emit('scrape_progress', {'message': f'{task["name"]} completed'})
