@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 
 const JobDetail = ({ jobs }) => {
   const { id } = useParams();
@@ -19,6 +19,7 @@ const JobDetail = ({ jobs }) => {
       <p><strong>Posted Date:</strong> {job.posted_date}</p>
       <p><strong>Qualifications:</strong> {job.qualifications}</p>
       <p><strong>Job Description:</strong> {job.job_description}</p>
+      <Link to="/" className="back-button">Return to Listings</Link>
     </div>
   );
 };
