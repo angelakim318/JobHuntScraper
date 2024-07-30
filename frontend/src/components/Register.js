@@ -16,7 +16,7 @@ const Register = () => {
       setMessage("Passwords do not match");
       return;
     }
-
+  
     try {
       const response = await axios.post('http://127.0.0.1:5000/api/register', {
         first_name: firstName,
@@ -26,7 +26,8 @@ const Register = () => {
       setMessage(response.data.msg);
       history.push('/login');
     } catch (error) {
-      setMessage(error.response.data.msg);
+      const errorMessage = error.response ? error.response.data.msg : 'An error occurred';
+      setMessage(errorMessage);
     }
   };
 

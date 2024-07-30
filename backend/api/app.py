@@ -69,12 +69,14 @@ def login():
 def get_jobs():
     session = SessionLocal()
     try:
+        print("Fetching jobs from database")
         jobs = session.query(Job).all()
         jobs_list = [job.to_dict() for job in jobs]
         for job in jobs_list:
             for key, value in job.items():
                 if value is None:
                     job[key] = 'N/A'
+        print(f"Jobs fetched: {jobs_list}")
         return jsonify(jobs_list)
     except Exception as e:
         print(f"Error: {e}")

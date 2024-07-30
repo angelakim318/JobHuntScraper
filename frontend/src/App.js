@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import io from 'socket.io-client';
 import JobList from './components/JobList';
@@ -17,6 +17,30 @@ function App() {
   const [message, setMessage] = useState('');
   const [auth, setAuth] = useState(false);
   const history = useHistory();
+
+  const fetchJobs = useCallback(async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setMessage('No token found, please log in again.');
+        setAuth(false);
+        history.push('/login');
+        return;
+      }
+      const response = await axios.get('http://127.0.0.1:5000/api/jobs', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      console.log('Jobs fetched from API:', response.data);
+      setJobs(response.data);
+      setMessage(''); // Clear message after fetching jobs
+    } catch (error) {
+      const errorMessage = error.response ? error.response.data.error : 'An error occurred while fetching jobs';
+      console.error('Error fetching jobs:', errorMessage);
+      setMessage(errorMessage);
+    }
+  }, [history]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -44,22 +68,7 @@ function App() {
         socket.off('scrape_complete');
       };
     }
-  }, [auth]);
-
-  const fetchJobs = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('http://127.0.0.1:5000/api/jobs', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      setJobs(response.data);
-      setMessage(''); // Clear message after fetching jobs
-    } catch (error) {
-      console.error('Error fetching jobs:', error);
-    }
-  };
+  }, [auth, fetchJobs]);
 
   const handleSearch = async (query) => {
     try {

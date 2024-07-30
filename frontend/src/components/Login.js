@@ -10,7 +10,7 @@ const Login = ({ setAuth }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     try {
       const response = await axios.post('http://127.0.0.1:5000/api/login', {
         username,
@@ -20,7 +20,8 @@ const Login = ({ setAuth }) => {
       localStorage.setItem('token', response.data.access_token);
       history.push('/');
     } catch (error) {
-      setMessage(error.response.data.msg);
+      const errorMessage = error.response ? error.response.data.msg : 'An error occurred';
+      setMessage(errorMessage);
     }
   };
 
