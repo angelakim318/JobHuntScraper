@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useHistory, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const Login = ({ setAuth }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     try {
       const response = await axios.post('http://127.0.0.1:5000/api/login', {
         username,
@@ -18,10 +18,9 @@ const Login = ({ setAuth }) => {
       });
       setAuth(true);
       localStorage.setItem('token', response.data.access_token);
-      history.push('/');
+      navigate('/');
     } catch (error) {
-      const errorMessage = error.response ? error.response.data.msg : 'An error occurred';
-      setMessage(errorMessage);
+      setMessage(error.response.data.msg);
     }
   };
 
@@ -46,7 +45,6 @@ const Login = ({ setAuth }) => {
         <button type="submit">Login</button>
       </form>
       {message && <p>{message}</p>}
-      <p>Don't have an account? <Link to="/register">Register here</Link></p>
     </div>
   );
 };

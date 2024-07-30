@@ -7,7 +7,7 @@ import ScrapeButton from './components/ScrapeButton';
 import JobDetail from './components/JobDetail';
 import Register from './components/Register';
 import Login from './components/Login';
-import { BrowserRouter as Router, Route, Switch, Redirect, useHistory } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate, useNavigate } from 'react-router-dom';
 import './App.css';
 
 const socket = io('http://127.0.0.1:5000');
@@ -16,7 +16,8 @@ function App() {
   const [jobs, setJobs] = useState([]);
   const [message, setMessage] = useState('');
   const [auth, setAuth] = useState(false);
-  const history = useHistory();
+
+  const navigate = useNavigate();
 
   const fetchJobs = useCallback(async () => {
     try {
@@ -24,7 +25,7 @@ function App() {
       if (!token) {
         setMessage('No token found, please log in again.');
         setAuth(false);
-        history.push('/login');
+        navigate('/login');
         return;
       }
       const response = await axios.get('http://127.0.0.1:5000/api/jobs', {
@@ -40,7 +41,7 @@ function App() {
       console.error('Error fetching jobs:', errorMessage);
       setMessage(errorMessage);
     }
-  }, [history]);
+  }, [navigate]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -102,43 +103,47 @@ function App() {
   const handleLogout = () => {
     localStorage.removeItem('token');
     setAuth(false);
-    history.push('/login');
+    navigate('/login');
   };
 
   return (
-    <Router>
-      <div className="App">
-        <div className="navbar">
-          <h1>JobHuntScraper</h1>
-          {auth && <button onClick={handleLogout} className="logout-button">Logout</button>}
-        </div>
-        <div className="container">
-          <Switch>
-            <Route path="/register" component={Register} />
-            <Route path="/login">
-              <Login setAuth={setAuth} />
-            </Route>
-            {auth ? (
-              <>
+    <div className="App">
+      <div className="navbar">
+        <h1>JobHuntScraper</h1>
+        {auth && <button onClick={handleLogout} className="logout-button">Logout</button>}
+      </div>
+      <div className="container">
+        <Routes>
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login setAuth={setAuth} />} />
+          {auth ? (
+            <>
+              <Route path="/" element={<>
                 <div className="scrape-button">
                   <ScrapeButton onScrape={handleScrape} />
                   <p className="scrape-message">Note: Scraping will take around 30 minutes to complete.</p>
                 </div>
                 <SearchBar onSearch={handleSearch} />
                 {message && <p>{message}</p>}
-                <Switch>
-                  <Route exact path="/" component={() => <JobList jobs={jobs} />} />
-                  <Route path="/job/:id" component={() => <JobDetail jobs={jobs} />} />
-                </Switch>
-              </>
-            ) : (
-              <Redirect to="/login" />
-            )}
-          </Switch>
-        </div>
+                <JobList jobs={jobs} />
+              </>} />
+              <Route path="/job/:id" element={<JobDetail jobs={jobs} />} />
+            </>
+          ) : (
+            <Route path="*" element={<Navigate to="/login" />} />
+          )}
+        </Routes>
       </div>
+    </div>
+  );
+}
+
+function AppWrapper() {
+  return (
+    <Router>
+      <App />
     </Router>
   );
 }
 
-export default App;
+export default AppWrapper;

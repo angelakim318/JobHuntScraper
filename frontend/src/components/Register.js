@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useHistory, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
   const [firstName, setFirstName] = useState('');
@@ -8,7 +8,7 @@ const Register = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState('');
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -16,7 +16,7 @@ const Register = () => {
       setMessage("Passwords do not match");
       return;
     }
-  
+
     try {
       const response = await axios.post('http://127.0.0.1:5000/api/register', {
         first_name: firstName,
@@ -24,10 +24,9 @@ const Register = () => {
         password
       });
       setMessage(response.data.msg);
-      history.push('/login');
+      navigate('/login');
     } catch (error) {
-      const errorMessage = error.response ? error.response.data.msg : 'An error occurred';
-      setMessage(errorMessage);
+      setMessage(error.response.data.msg);
     }
   };
 
@@ -66,7 +65,6 @@ const Register = () => {
         <button type="submit">Register</button>
       </form>
       {message && <p>{message}</p>}
-      <p>Already have an account? <Link to="/login">Login here</Link></p>
     </div>
   );
 };
