@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
-import io from 'socket.io-client';
 import JobList from './components/JobList';
 import SearchBar from './components/SearchBar';
 import ScrapeButton from './components/ScrapeButton';
@@ -10,11 +9,8 @@ import Login from './components/Login';
 import { BrowserRouter as Router, Route, Routes, Navigate, useNavigate } from 'react-router-dom';
 import './App.css';
 
-const socket = io('http://127.0.0.1:5000');
-
 function App() {
   const [jobs, setJobs] = useState([]);
-  const [message, setMessage] = useState('');
   const [auth, setAuth] = useState(false);
 
   const navigate = useNavigate();
@@ -23,11 +19,10 @@ function App() {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        setMessage('No token found, please log in again.');
-        setAuth(false);
         navigate('/login');
         return;
       }
+      console.log('Fetching jobs with token:', token);
       const response = await axios.get('http://127.0.0.1:5000/api/jobs', {
         headers: {
           Authorization: `Bearer ${token}`
@@ -35,11 +30,9 @@ function App() {
       });
       console.log('Jobs fetched from API:', response.data);
       setJobs(response.data);
-      setMessage(''); // Clear message after fetching jobs
     } catch (error) {
       const errorMessage = error.response ? error.response.data.error : 'An error occurred while fetching jobs';
       console.error('Error fetching jobs:', errorMessage);
-      setMessage(errorMessage);
     }
   }, [navigate]);
 
@@ -53,21 +46,6 @@ function App() {
   useEffect(() => {
     if (auth) {
       fetchJobs();
-      // Listen for scrape progress messages
-      socket.on('scrape_progress', (data) => {
-        setMessage(data.message);
-      });
-
-      // Listen for scrape complete message
-      socket.on('scrape_complete', () => {
-        setMessage('Scraping completed. Fetching new job listings...');
-        fetchJobs(); // Fetch the new job listings after scraping is complete
-      });
-
-      return () => {
-        socket.off('scrape_progress');
-        socket.off('scrape_complete');
-      };
     }
   }, [auth, fetchJobs]);
 
@@ -83,20 +61,6 @@ function App() {
       setJobs(response.data);
     } catch (error) {
       console.error('Error searching jobs:', error);
-    }
-  };
-
-  const handleScrape = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      setMessage('Starting scraping...');
-      await axios.post('http://127.0.0.1:5000/api/scrape', {}, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-    } catch (error) {
-      console.error('Error scraping jobs:', error);
     }
   };
 
@@ -120,11 +84,10 @@ function App() {
             <>
               <Route path="/" element={<>
                 <div className="scrape-button">
-                  <ScrapeButton onScrape={handleScrape} />
-                  <p className="scrape-message">Note: Scraping will take around 30 minutes to complete.</p>
+                  <ScrapeButton fetchJobs={fetchJobs} />
+                  <p className="scrape-note">Note: Scraping will take around 30 minutes to complete.</p>
                 </div>
                 <SearchBar onSearch={handleSearch} />
-                {message && <p>{message}</p>}
                 <JobList jobs={jobs} />
               </>} />
               <Route path="/job/:id" element={<JobDetail jobs={jobs} />} />

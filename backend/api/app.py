@@ -3,11 +3,13 @@ import subprocess
 import os
 from flask_cors import CORS
 from flask_socketio import SocketIO, emit
-from models.models import SessionLocal, Job, User
+from models.models import SessionLocal, Job, User, DATABASE_URL
 from sqlalchemy.exc import SQLAlchemyError
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from dotenv import load_dotenv
+from sqlalchemy import create_engine
+import pandas as pd
 
 # Load environment variables from .env file
 load_dotenv()
@@ -109,6 +111,8 @@ def scrape():
     try:
         base_path = os.path.abspath(os.path.dirname(__file__))
         
+        socketio.emit('scrape_progress', {'message': 'Scraping has started'})
+
         tasks = [
             {"name": "Remote.co scraping", "script": "../scrapers/remoteco_scraper.py"},
             {"name": "Remote.co details", "script": "../scrapers/remoteco_details.py"},
@@ -119,7 +123,6 @@ def scrape():
             {"name": "SimplyHired scraping", "script": "../scrapers/simplyhired_scraper.py"},
             {"name": "SimplyHired details", "script": "../scrapers/simplyhired_details.py"},
             {"name": "SimplyHired merge", "script": "../merge/simplyhired_merge.py"},
-            {"name": "Combine all jobs", "script": "../merge/combine_all_jobs.py"},
         ]
 
         for task in tasks:
@@ -128,6 +131,76 @@ def scrape():
                 socketio.emit('scrape_progress', {'message': f'Error in {task["name"]}: {result.stderr}'})
             else:
                 socketio.emit('scrape_progress', {'message': f'{task["name"]} completed'})
+
+        socketio.emit('scrape_progress', {'message': 'Combining all job data'})
+        
+        # Combining all job data
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        remoteco_combined_path = os.path.join(script_dir, '..', 'data', 'remoteco_combined.csv')
+        simplyhired_combined_path = os.path.join(script_dir, '..', 'data', 'simplyhired_combined.csv')
+        stackoverflow_combined_path = os.path.join(script_dir, '..', 'data', 'stackoverflow_combined.csv')
+        final_combined_csv_path = os.path.join(script_dir, '..', 'data', 'final_combined_jobs.csv')
+
+        print("Loading CSV files into DataFrames...")
+        remoteco_df = pd.read_csv(remoteco_combined_path)
+        simplyhired_df = pd.read_csv(simplyhired_combined_path)
+        stackoverflow_df = pd.read_csv(stackoverflow_combined_path)
+
+        print("Concatenating DataFrames...")
+        final_combined_df = pd.concat([remoteco_df, simplyhired_df, stackoverflow_df], ignore_index=True, sort=False)
+
+        final_combined_df.fillna('N/A', inplace=True)
+
+        final_combined_df['qualifications'] = final_combined_df['qualifications'].apply(lambda x: ', '.join(eval(x)) if isinstance(x, str) and x.startswith('[') else x)
+
+        os.makedirs(os.path.dirname(final_combined_csv_path), exist_ok=True)
+
+        print("Saving final combined DataFrame to CSV...")
+        final_combined_df.to_csv(final_combined_csv_path, index=False)
+
+        socketio.emit('scrape_progress', {'message': 'Loading data into the database'})
+
+        print("Connecting to database and loading data...")
+        engine = create_engine(DATABASE_URL)
+        session = SessionLocal()
+        
+        try:
+            print("Clearing existing job data...")
+            session.query(Job).delete()
+            session.commit()
+
+            print("Inserting new job data...")
+            jobs_data = final_combined_df.to_dict(orient='records')
+
+            for job_data in jobs_data:
+                job = Job(
+                    url=job_data['url'] if job_data['url'] != 'N/A' else None,
+                    title=job_data['title'] if job_data['title'] != 'N/A' else None,
+                    company=job_data['company'] if job_data['company'] != 'N/A' else None,
+                    job_type=job_data['job type'] if job_data['job type'] != 'N/A' else None,
+                    location=job_data['location'] if job_data['location'] != 'N/A' else None,
+                    benefits=job_data['benefits'] if job_data['benefits'] != 'N/A' else None,
+                    posted_date=pd.to_datetime(job_data['posted date'], errors='coerce') if job_data['posted date'] != 'N/A' else None,
+                    qualifications=job_data['qualifications'] if job_data['qualifications'] != 'N/A' else None,
+                    job_description=job_data['job description'].replace('\n', '<br>') if job_data['job description'] != 'N/A' else None
+                )
+
+                if job.posted_date and pd.isna(job.posted_date):
+                    job.posted_date = None
+
+                session.add(job)
+            
+            session.commit()
+            print("New data inserted into the jobs table")
+            socketio.emit('scrape_progress', {'message': 'Data loading completed'})
+
+        except SQLAlchemyError as e:
+            session.rollback()
+            print(f"Error occurred: {e}")
+            socketio.emit('scrape_progress', {'message': f'Error loading data into database: {e}'})
+        finally:
+            session.close()
+            print("Database session closed")
 
         socketio.emit('scrape_complete')
         return jsonify({"message": "Scraping completed"}), 200

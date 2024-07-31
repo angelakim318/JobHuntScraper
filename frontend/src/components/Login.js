@@ -16,11 +16,17 @@ const Login = ({ setAuth }) => {
         username,
         password
       });
-      setAuth(true);
-      localStorage.setItem('token', response.data.access_token);
-      navigate('/');
+
+      if (response && response.data && response.data.access_token) {
+        setAuth(true);
+        localStorage.setItem('token', response.data.access_token);
+        navigate('/');
+      } else {
+        setMessage('Login failed: Invalid response from server.');
+      }
     } catch (error) {
-      setMessage(error.response.data.msg);
+      console.error('Login error:', error);
+      setMessage(error.response ? error.response.data.msg : 'An error occurred during login.');
     }
   };
 

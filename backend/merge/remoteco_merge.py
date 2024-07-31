@@ -1,5 +1,5 @@
 import pandas as pd
-import os 
+import os
 
 def merge_remoteco_files():
     script_dir = os.path.dirname(os.path.abspath(__file__))

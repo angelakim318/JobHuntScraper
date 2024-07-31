@@ -30,7 +30,7 @@ class Job(Base):
             'location': self.location,
             'benefits': self.benefits,
             'posted_date': self.posted_date,
-            'qualifications': self.qualifications,
+            'qualifications': self.qualifications.replace('[', '').replace(']', '').replace('\'', '') if self.qualifications else 'N/A',
             'job_description': self.job_description,
         }
 

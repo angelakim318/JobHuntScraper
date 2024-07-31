@@ -7,10 +7,10 @@ const JobList = ({ jobs }) => {
       {jobs.map((job) => (
         <div key={job.id} className="job-card">
           <Link to={`/job/${job.id}`}>
-            <h2>{job.title}</h2>
+            <h3>{job.title}</h3>
           </Link>
-          <p>{job.company}</p>
-          <p>{job.location}</p>
+          <p><strong>Company:</strong> {job.company}</p>
+          <p><strong>Location:</strong> {job.location}</p>
         </div>
       ))}
     </div>

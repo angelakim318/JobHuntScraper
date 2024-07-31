@@ -91,6 +91,13 @@ body {
 .scrape-message {
   margin-top: 10px;
   color: #666;
+  text-align: center;
+}
+
+.scrape-note {
+  margin-top: 5px;
+  color: #888;
+  text-align: center;
 }
 
 .job-detail {
@@ -98,16 +105,17 @@ body {
   padding: 20px;
   background: white;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  text-align: center;
+  text-align: left;  /* Align job details to the left */
 }
 
 .job-detail h2 {
+  text-align: center;  /* Center align job title */
   margin-top: 0;
 }
 
 .job-detail p {
   margin: 10px 0;
-  text-align: left;
+  text-align: left;  /* Align job details to the left */
 }
 
 .job-detail strong {
@@ -115,9 +123,13 @@ body {
   margin-bottom: 5px;
 }
 
+.button-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px; /* Add margin-top to create space */
+}
+
 .back-button {
-  display: inline-block;
-  margin-top: 20px;
   padding: 10px 20px;
   background: #333;
   color: white;
@@ -125,6 +137,7 @@ body {
   border-radius: 5px;
   cursor: pointer;
   font-size: 14px; 
+  text-align: center;
 }
 
 .back-button:hover {
