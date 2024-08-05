@@ -11,38 +11,17 @@ import os
 import pandas as pd
 import subprocess
 from sqlalchemy import create_engine
-from celery import Celery
 
 # Load environment variables from .env file
 load_dotenv()
 
 app = Flask(__name__)
+CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
 app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
 
-# Celery configuration
-app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
-app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379/0'
-
-def make_celery(app):
-    celery = Celery(app.import_name, broker=app.config['CELERY_BROKER_URL'])
-    celery.conf.update(app.config)
-    TaskBase = celery.Task
-
-    class ContextTask(TaskBase):
-        abstract = True
-
-        def __call__(self, *args, **kwargs):
-            with app.app_context():
-                return TaskBase.__call__(self, *args, **kwargs)
-    celery.Task = ContextTask
-    return celery
-
-celery = make_celery(app)
-
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
-CORS(app, resources={r"/api/*": {"origins": "*"}})
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 @app.route('/api/register', methods=['POST'])
@@ -131,22 +110,34 @@ def search_jobs():
 @jwt_required()
 def scrape_remoteco():
     user_id = get_jwt_identity()
-    scrape_remoteco_jobs.delay(user_id)
-    return jsonify({"message": "Remote.co scraping has started"}), 202
+    result = run_scraper(user_id, "remoteco", [
+        "../scrapers/remoteco_scraper.py",
+        "../scrapers/remoteco_details.py",
+        "../merge/remoteco_merge.py"
+    ])
+    return jsonify({"message": result}), 202
 
 @app.route('/api/scrape/stackoverflow', methods=['POST'])
 @jwt_required()
 def scrape_stackoverflow():
     user_id = get_jwt_identity()
-    scrape_stackoverflow_jobs.delay(user_id)
-    return jsonify({"message": "StackOverflow scraping has started"}), 202
+    result = run_scraper(user_id, "stackoverflow", [
+        "../scrapers/stackoverflow_scraper.py",
+        "../scrapers/stackoverflow_details.py",
+        "../merge/stackoverflow_merge.py"
+    ])
+    return jsonify({"message": result}), 202
 
 @app.route('/api/scrape/simplyhired', methods=['POST'])
 @jwt_required()
 def scrape_simplyhired():
     user_id = get_jwt_identity()
-    scrape_simplyhired_jobs.delay(user_id)
-    return jsonify({"message": "SimplyHired scraping has started"}), 202
+    result = run_scraper(user_id, "simplyhired", [
+        "../scrapers/simplyhired_scraper.py",
+        "../scrapers/simplyhired_details.py",
+        "../merge/simplyhired_merge.py"
+    ])
+    return jsonify({"message": result}), 202
 
 @app.route('/api/clear_database', methods=['POST'])
 @jwt_required()
@@ -160,31 +151,6 @@ def clear_database():
     except SQLAlchemyError as e:
         return jsonify({"error": str(e)}), 500
 
-# Celery tasks for scraping
-@celery.task
-def scrape_remoteco_jobs(user_id):
-    run_scraper(user_id, "Remote.co", [
-        "../scrapers/remoteco_scraper.py",
-        "../scrapers/remoteco_details.py",
-        "../merge/remoteco_merge.py"
-    ])
-
-@celery.task
-def scrape_stackoverflow_jobs(user_id):
-    run_scraper(user_id, "StackOverflow", [
-        "../scrapers/stackoverflow_scraper.py",
-        "../scrapers/stackoverflow_details.py",
-        "../merge/stackoverflow_merge.py"
-    ])
-
-@celery.task
-def scrape_simplyhired_jobs(user_id):
-    run_scraper(user_id, "SimplyHired", [
-        "../scrapers/simplyhired_scraper.py",
-        "../scrapers/simplyhired_details.py",
-        "../merge/simplyhired_merge.py"
-    ])
-
 def run_scraper(user_id, source_name, scripts):
     base_path = os.path.abspath(os.path.dirname(__file__))
 
@@ -192,13 +158,17 @@ def run_scraper(user_id, source_name, scripts):
         result = subprocess.run(["python3", os.path.join(base_path, script)], capture_output=True, text=True)
         if result.returncode != 0:
             print(f"Error in {source_name} scraping: {result.stderr}")
+            return f"Error in {source_name} scraping: {result.stderr}"
         else:
             print(f"{source_name} scraping completed successfully.")
 
     # Load combined data into database
-    emit('scrape_progress', {'message': f'Loading {source_name} data into the database'})
+    csv_file_name = f'{source_name}_combined.csv'
+    combined_csv_path = os.path.join(base_path, '..', 'data', csv_file_name)
 
-    combined_csv_path = os.path.join(base_path, f'../data/{source_name.lower()}_combined.csv')
+    if not os.path.exists(combined_csv_path):
+        return f'CSV file {combined_csv_path} was not found.'
+
     combined_df = pd.read_csv(combined_csv_path)
     combined_df.fillna('N/A', inplace=True)
     combined_df['qualifications'] = combined_df['qualifications'].apply(lambda x: ', '.join(eval(x)) if isinstance(x, str) and x.startswith('[') else x)
@@ -228,15 +198,12 @@ def run_scraper(user_id, source_name, scripts):
             session.add(job)
 
         session.commit()
-        emit('scrape_progress', {'message': f'{source_name} data loading completed'})
-
+        return f'{source_name} data loading completed'
     except SQLAlchemyError as e:
         session.rollback()
-        emit('scrape_progress', {'message': f'Error loading {source_name} data into database: {e}'})
+        return f'Error loading {source_name} data into database: {e}'
     finally:
         session.close()
-
-    emit('scrape_complete')
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)

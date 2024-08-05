@@ -1,3 +1,11 @@
+import sys
+import os
+
+# Ensure the path to the backend folder is correctly added to the system path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 from selenium import webdriver
 from selenium.webdriver.safari.service import Service
 from selenium.webdriver.safari.options import Options
@@ -8,11 +16,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 import time
 import csv
-import os
 import logging
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from models.models import Job, DATABASE_URL
+from backend.models.models import Job, DATABASE_URL  # Import after setting up sys.path
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)

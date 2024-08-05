@@ -8,7 +8,11 @@ import time
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+import sys
 from models.models import Job, DATABASE_URL
+
+# Add path to the backend folder to the system path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'backend')))
 
 def scrape_stackoverflow_jobs():
     # Check if data already exists in the database

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { getJobs, searchJobs, scrapeJobs, clearDatabase } from './services/api';
+import { getJobs, searchJobs, clearDatabase } from './services/api';
 import JobList from './components/JobList';
 import SearchBar from './components/SearchBar';
 import ScrapeButton from './components/ScrapeButton';
@@ -61,15 +61,6 @@ function App() {
     navigate('/login');
   };
 
-  const handleScrape = async (source) => {
-    try {
-      await scrapeJobs(source);
-      fetchJobs();
-    } catch (error) {
-      console.error(`Error scraping jobs from ${source}:`, error);
-    }
-  };
-
   const handleClearDatabase = async () => {
     try {
       await clearDatabase();
@@ -93,9 +84,9 @@ function App() {
             <>
               <Route path="/" element={<>
                 <div className="scrape-buttons">
-                  <ScrapeButton source="remoteco" onScrape={() => handleScrape('remoteco')} />
-                  <ScrapeButton source="stackoverflow" onScrape={() => handleScrape('stackoverflow')} />
-                  <ScrapeButton source="simplyhired" onScrape={() => handleScrape('simplyhired')} />
+                  <ScrapeButton source="remoteco" fetchJobs={fetchJobs} />
+                  <ScrapeButton source="stackoverflow" fetchJobs={fetchJobs} />
+                  <ScrapeButton source="simplyhired" fetchJobs={fetchJobs} />
                   <button onClick={handleClearDatabase} className="clear-button">Clear Database</button>
                   <p className="scrape-note">Note: Scraping will take around 30 minutes to complete.</p>
                 </div>

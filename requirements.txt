@@ -17,7 +17,6 @@ bidict==0.23.1
 billiard==4.2.0
 bleach==6.1.0
 blinker==1.8.2
-celery==5.4.0
 certifi==2024.7.4
 cffi==1.16.0
 charset-normalizer==3.3.2
@@ -115,7 +114,6 @@ PyYAML==6.0.1
 pyzmq==26.0.3
 qtconsole==5.5.2
 QtPy==2.4.1
-redis==5.0.8
 referencing==0.35.1
 requests==2.32.3
 rfc3339-validator==0.1.4
