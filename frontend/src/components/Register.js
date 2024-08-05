@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
+import { register } from './services/api'; // Import the register API call
 
 const Register = () => {
   const [firstName, setFirstName] = useState('');
@@ -18,15 +18,11 @@ const Register = () => {
     }
 
     try {
-      const response = await axios.post('http://127.0.0.1:5000/api/register', {
-        first_name: firstName,
-        username,
-        password
-      });
+      const response = await register(firstName, username, password);
       setMessage(response.data.msg);
       navigate('/login');
     } catch (error) {
-      setMessage(error.response.data.msg);
+      setMessage(error.response ? error.response.data.msg : 'An error occurred during registration.');
     }
   };
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
+import { login } from './services/api'; // Import the login API call
 
 const Login = ({ setAuth }) => {
   const [username, setUsername] = useState('');
@@ -12,10 +12,7 @@ const Login = ({ setAuth }) => {
     e.preventDefault();
 
     try {
-      const response = await axios.post('http://127.0.0.1:5000/api/login', {
-        username,
-        password
-      });
+      const response = await login(username, password);
 
       if (response && response.data && response.data.access_token) {
         setAuth(true);
