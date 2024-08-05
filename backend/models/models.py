@@ -21,7 +21,7 @@ class Job(Base):
     benefits = Column(String, nullable=True)
     posted_date = Column(Date, nullable=True)
     qualifications = Column(String, nullable=True)
-    job_description = Column(String, nullable=True)  
+    job_description = Column(String, nullable=True)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
 
     user = relationship('User', back_populates='jobs')

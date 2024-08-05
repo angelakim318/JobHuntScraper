@@ -17,8 +17,8 @@ from celery import Celery
 load_dotenv()
 
 app = Flask(__name__)
-app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')  # Load secret key from .env
-app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)  # Set token to expire in 1 hour
+app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
 
 # Celery configuration
 app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
@@ -93,20 +93,17 @@ def login():
 @app.route('/api/jobs', methods=['GET'])
 @jwt_required()
 def get_jobs():
-    user_id = get_jwt_identity()  # Get user ID from token
+    user_id = get_jwt_identity()
     session = SessionLocal()
     try:
-        print("Fetching jobs from database")
         jobs = session.query(Job).filter_by(user_id=user_id).all()
         jobs_list = [job.to_dict() for job in jobs]
         for job in jobs_list:
             for key, value in job.items():
                 if value is None:
                     job[key] = 'N/A'
-        print(f"Jobs fetched: {jobs_list}")
         return jsonify(jobs_list)
     except Exception as e:
-        print(f"Error: {e}")
         return jsonify({"error": str(e)}), 500
     finally:
         session.close()
@@ -114,7 +111,7 @@ def get_jobs():
 @app.route('/api/jobs/search', methods=['GET'])
 @jwt_required()
 def search_jobs():
-    user_id = get_jwt_identity() 
+    user_id = get_jwt_identity()
     session = SessionLocal()
     try:
         query = request.args.get('query')
@@ -126,7 +123,6 @@ def search_jobs():
                     job[key] = 'N/A'
         return jsonify(jobs_list)
     except Exception as e:
-        print(f"Error: {e}")
         return jsonify({"error": str(e)}), 500
     finally:
         session.close()
@@ -134,21 +130,21 @@ def search_jobs():
 @app.route('/api/scrape/remoteco', methods=['POST'])
 @jwt_required()
 def scrape_remoteco():
-    user_id = get_jwt_identity() 
+    user_id = get_jwt_identity()
     scrape_remoteco_jobs.delay(user_id)
     return jsonify({"message": "Remote.co scraping has started"}), 202
 
 @app.route('/api/scrape/stackoverflow', methods=['POST'])
 @jwt_required()
 def scrape_stackoverflow():
-    user_id = get_jwt_identity()  
+    user_id = get_jwt_identity()
     scrape_stackoverflow_jobs.delay(user_id)
     return jsonify({"message": "StackOverflow scraping has started"}), 202
 
 @app.route('/api/scrape/simplyhired', methods=['POST'])
 @jwt_required()
 def scrape_simplyhired():
-    user_id = get_jwt_identity()  
+    user_id = get_jwt_identity()
     scrape_simplyhired_jobs.delay(user_id)
     return jsonify({"message": "SimplyHired scraping has started"}), 202
 
@@ -160,7 +156,6 @@ def clear_database():
         session = SessionLocal()
         session.query(Job).filter_by(user_id=user_id).delete()
         session.commit()
-        session.close()
         return jsonify({"message": "Database cleared successfully"}), 200
     except SQLAlchemyError as e:
         return jsonify({"error": str(e)}), 500
@@ -203,7 +198,6 @@ def run_scraper(user_id, source_name, scripts):
     # Load combined data into database
     emit('scrape_progress', {'message': f'Loading {source_name} data into the database'})
 
-    # Assuming the final combined CSV for each source is saved as {source_name}_combined.csv
     combined_csv_path = os.path.join(base_path, f'../data/{source_name.lower()}_combined.csv')
     combined_df = pd.read_csv(combined_csv_path)
     combined_df.fillna('N/A', inplace=True)
@@ -225,14 +219,14 @@ def run_scraper(user_id, source_name, scripts):
                 posted_date=pd.to_datetime(job_data['posted date'], errors='coerce') if job_data['posted date'] != 'N/A' else None,
                 qualifications=job_data['qualifications'] if job_data['qualifications'] != 'N/A' else None,
                 job_description=job_description.replace('\n', '<br>') if job_description != 'N/A' else None,
-                user_id=user_id  # Associate job with the user
+                user_id=user_id
             )
 
             if job.posted_date and pd.isna(job.posted_date):
                 job.posted_date = None
 
             session.add(job)
-        
+
         session.commit()
         emit('scrape_progress', {'message': f'{source_name} data loading completed'})
 
