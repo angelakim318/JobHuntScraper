@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { getJobs, searchJobs } from './services/api';  // Updated import path
+import { getJobs, searchJobs, scrapeJobs, clearDatabase } from './services/api';
 import JobList from './components/JobList';
 import SearchBar from './components/SearchBar';
-import ScrapeButton from './components/ScrapeButton';  // Import the updated ScrapeButton
+import ScrapeButton from './components/ScrapeButton';
 import JobDetail from './components/JobDetail';
 import Register from './components/Register';
 import Login from './components/Login';
@@ -22,9 +22,7 @@ function App() {
         navigate('/login');
         return;
       }
-      console.log('Fetching jobs with token:', token);
       const response = await getJobs();
-      console.log('Jobs fetched from API:', response.data);
       setJobs(response.data);
     } catch (error) {
       const errorMessage = error.response ? error.response.data.error : 'An error occurred while fetching jobs';
@@ -56,9 +54,26 @@ function App() {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    localStorage.removeItem('refreshToken');
     setAuth(false);
     navigate('/login');
+  };
+
+  const handleScrape = async (source) => {
+    try {
+      await scrapeJobs(source);
+      fetchJobs();
+    } catch (error) {
+      console.error(`Error scraping jobs from ${source}:`, error);
+    }
+  };
+
+  const handleClearDatabase = async () => {
+    try {
+      await clearDatabase();
+      setJobs([]);
+    } catch (error) {
+      console.error('Error clearing database:', error);
+    }
   };
 
   return (
@@ -74,8 +89,11 @@ function App() {
           {auth ? (
             <>
               <Route path="/" element={<>
-                <div className="scrape-button">
-                  <ScrapeButton fetchJobs={fetchJobs} />
+                <div className="scrape-buttons">
+                  <ScrapeButton source="remoteco" onScrape={() => handleScrape('remoteco')} />
+                  <ScrapeButton source="stackoverflow" onScrape={() => handleScrape('stackoverflow')} />
+                  <ScrapeButton source="simplyhired" onScrape={() => handleScrape('simplyhired')} />
+                  <button onClick={handleClearDatabase} className="clear-button">Clear Database</button>
                   <p className="scrape-note">Note: Scraping will take around 30 minutes to complete.</p>
                 </div>
                 <SearchBar onSearch={handleSearch} />
