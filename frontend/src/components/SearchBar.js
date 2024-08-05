@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 
-const SearchBar = ({ onSearch }) => {
+const SearchBar = ({ onSearch, locations }) => {
   const [query, setQuery] = useState('');
+  const [selectedLocation, setSelectedLocation] = useState('');
 
   const handleSearch = (e) => {
     e.preventDefault();
-    onSearch(query);
+    onSearch(query, selectedLocation);
   };
 
   return (
@@ -16,6 +17,12 @@ const SearchBar = ({ onSearch }) => {
         value={query} 
         onChange={(e) => setQuery(e.target.value)} 
       />
+      <select value={selectedLocation} onChange={(e) => setSelectedLocation(e.target.value)}>
+        <option value="">All Locations</option>
+        {locations.map((location, index) => (
+          <option key={index} value={location}>{location}</option>
+        ))}
+      </select>
       <button type="submit">Filter</button>
     </form>
   );

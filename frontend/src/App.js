@@ -12,6 +12,7 @@ import './App.css';
 function App() {
   const [jobs, setJobs] = useState([]);
   const [auth, setAuth] = useState(false);
+  const [locations, setLocations] = useState([]);
 
   const navigate = useNavigate();
 
@@ -24,6 +25,8 @@ function App() {
       }
       const response = await getJobs();
       setJobs(response.data);
+      const uniqueLocations = [...new Set(response.data.map(job => job.location))];
+      setLocations(uniqueLocations);
     } catch (error) {
       const errorMessage = error.response ? error.response.data.error : 'An error occurred while fetching jobs';
       console.error('Error fetching jobs:', errorMessage);
@@ -43,9 +46,9 @@ function App() {
     }
   }, [auth, fetchJobs]);
 
-  const handleSearch = async (query) => {
+  const handleSearch = async (query, location) => {
     try {
-      const response = await searchJobs(query);
+      const response = await searchJobs(query, location);
       setJobs(response.data);
     } catch (error) {
       console.error('Error searching jobs:', error);
@@ -96,7 +99,7 @@ function App() {
                   <button onClick={handleClearDatabase} className="clear-button">Clear Database</button>
                   <p className="scrape-note">Note: Scraping will take around 30 minutes to complete.</p>
                 </div>
-                <SearchBar onSearch={handleSearch} />
+                <SearchBar onSearch={handleSearch} locations={locations} />
                 <JobList jobs={jobs} />
               </>} />
               <Route path="/job/:id" element={<JobDetail jobs={jobs} />} />
