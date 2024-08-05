@@ -1,9 +1,12 @@
-# models/models.py
-
-from sqlalchemy import create_engine, Column, Integer, String, Date
+import os
+from sqlalchemy import create_engine, Column, Integer, String, Date, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, relationship
 from werkzeug.security import generate_password_hash, check_password_hash
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 Base = declarative_base()
 
@@ -18,7 +21,10 @@ class Job(Base):
     benefits = Column(String, nullable=True)
     posted_date = Column(Date, nullable=True)
     qualifications = Column(String, nullable=True)
-    job_description = Column(String, nullable=True)
+    job_description = Column(String, nullable=True)  
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+
+    user = relationship('User', back_populates='jobs')
 
     def to_dict(self):
         return {
@@ -41,13 +47,23 @@ class User(Base):
     username = Column(String, unique=True, nullable=False)
     password_hash = Column(String, nullable=False)
 
+    jobs = relationship('Job', back_populates='user')
+
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
-DATABASE_URL = 'postgresql+psycopg2://angelakim:angelakim123@localhost/job_scraping_db'
+# Load database credentials from environment variables
+DB_USERNAME = os.getenv('DB_USERNAME')
+DB_PASSWORD = os.getenv('DB_PASSWORD')
+DB_NAME = os.getenv('DB_NAME')
+DB_HOST = os.getenv('DB_HOST', 'localhost')
+DB_PORT = os.getenv('DB_PORT', '5432')
+
+DATABASE_URL = f'postgresql+psycopg2://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
+
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

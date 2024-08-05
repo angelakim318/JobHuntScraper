@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { scrapeJobs } from '../services/api';  // Updated import path
 import { io } from 'socket.io-client';
 
 const ScrapeButton = ({ fetchJobs }) => {
@@ -30,12 +30,7 @@ const ScrapeButton = ({ fetchJobs }) => {
       return;
     }
     try {
-      const response = await axios.post('http://127.0.0.1:5000/api/scrape', {}, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      console.log(response.data);
+      await scrapeJobs();
       setMessage('Scraping has started');
     } catch (error) {
       console.error('Error scraping jobs:', error);

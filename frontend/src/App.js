@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
+import { getJobs, searchJobs } from './services/api';  // Updated import path
 import JobList from './components/JobList';
 import SearchBar from './components/SearchBar';
-import ScrapeButton from './components/ScrapeButton';
+import ScrapeButton from './components/ScrapeButton';  // Import the updated ScrapeButton
 import JobDetail from './components/JobDetail';
 import Register from './components/Register';
 import Login from './components/Login';
@@ -23,11 +23,7 @@ function App() {
         return;
       }
       console.log('Fetching jobs with token:', token);
-      const response = await axios.get('http://127.0.0.1:5000/api/jobs', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const response = await getJobs();
       console.log('Jobs fetched from API:', response.data);
       setJobs(response.data);
     } catch (error) {
@@ -51,13 +47,7 @@ function App() {
 
   const handleSearch = async (query) => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('http://127.0.0.1:5000/api/jobs/search', {
-        params: { query },
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const response = await searchJobs(query);
       setJobs(response.data);
     } catch (error) {
       console.error('Error searching jobs:', error);
@@ -66,6 +56,7 @@ function App() {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
     setAuth(false);
     navigate('/login');
   };

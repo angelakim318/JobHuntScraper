@@ -14,6 +14,16 @@ def merge_csv(file_paths):
     return pd.concat(dfs, ignore_index=True)
 
 def combine_all_jobs():
+    # Check if data already exists in the database
+    engine = create_engine(DATABASE_URL)
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    if session.query(Job).first():
+        print("Data already exists in the database. Skipping combining jobs.")
+        session.close()
+        return
+    session.close()
+
     # Get the absolute path of the current script
     script_dir = os.path.dirname(os.path.abspath(__file__))
     print("Script directory:", script_dir)
@@ -68,7 +78,7 @@ def combine_all_jobs():
                 benefits=job_data['benefits'] if job_data['benefits'] != 'N/A' else None,
                 posted_date=pd.to_datetime(job_data['posted date'], errors='coerce') if job_data['posted date'] != 'N/A' else None,
                 qualifications=job_data['qualifications'] if job_data['qualifications'] != 'N/A' else None,
-                job_description=job_data['job description'].replace('\n', '<br>') if job_data['job description'] != 'N/A' else None
+                job_description=job_data['job description'].replace('\n', '<br>') if job_data['job_description'] != 'N/A' else None
             )
             
             # Ensure posted_date is None if it is NaT

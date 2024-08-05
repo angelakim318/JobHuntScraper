@@ -6,8 +6,20 @@ from bs4 import BeautifulSoup
 import csv
 import time
 import os
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from models.models import Job, DATABASE_URL
 
 def scrape_simplyhired_jobs():
+    # Check if data already exists in the database
+    engine = create_engine(DATABASE_URL)
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    if session.query(Job).filter(Job.url.like('%simplyhired.com%')).first():
+        print("Data for SimplyHired already exists in the database. Skipping scraping.")
+        return
+    session.close()
+
     script_dir = os.path.dirname(os.path.abspath(__file__))
     output_csv = os.path.join(script_dir, '..', 'data', 'simplyhired_jobs.csv')
 
