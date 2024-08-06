@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { getJobs, searchJobs, clearDatabase } from './services/api';
+import { getJobs, searchJobs, clearDatabase, getScrapeStatus } from './services/api';
 import JobList from './components/JobList';
 import SearchBar from './components/SearchBar';
 import ScrapeButton from './components/ScrapeButton';
@@ -13,6 +13,7 @@ function App() {
   const [jobs, setJobs] = useState([]);
   const [auth, setAuth] = useState(false);
   const [locations, setLocations] = useState([]);
+  const [scrapeStatus, setScrapeStatus] = useState({});
 
   const navigate = useNavigate();
 
@@ -33,6 +34,15 @@ function App() {
     }
   }, [navigate]);
 
+  const fetchScrapeStatus = useCallback(async () => {
+    try {
+      const response = await getScrapeStatus();
+      setScrapeStatus(response.data);
+    } catch (error) {
+      console.error('Error fetching scrape status:', error);
+    }
+  }, []);
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -43,8 +53,9 @@ function App() {
   useEffect(() => {
     if (auth) {
       fetchJobs();
+      fetchScrapeStatus();
     }
-  }, [auth, fetchJobs]);
+  }, [auth, fetchJobs, fetchScrapeStatus]);
 
   const handleSearch = async (query, location) => {
     try {
@@ -65,6 +76,7 @@ function App() {
     try {
       await clearDatabase();
       setJobs([]);
+      fetchScrapeStatus(); // Fetch scrape status after clearing database
     } catch (error) {
       console.error('Error clearing database:', error);
     }
@@ -84,9 +96,9 @@ function App() {
             <>
               <Route path="/" element={<>
                 <div className="scrape-buttons">
-                  <ScrapeButton source="remoteco" fetchJobs={fetchJobs} />
-                  <ScrapeButton source="stackoverflow" fetchJobs={fetchJobs} />
-                  <ScrapeButton source="simplyhired" fetchJobs={fetchJobs} />
+                  <ScrapeButton source="remoteco" fetchJobs={fetchJobs} status={scrapeStatus.remoteco} />
+                  <ScrapeButton source="stackoverflow" fetchJobs={fetchJobs} status={scrapeStatus.stackoverflow} />
+                  <ScrapeButton source="simplyhired" fetchJobs={fetchJobs} status={scrapeStatus.simplyhired} />
                   <button onClick={handleClearDatabase} className="clear-button">Clear Database</button>
                 </div>
                 <SearchBar onSearch={handleSearch} locations={locations} />

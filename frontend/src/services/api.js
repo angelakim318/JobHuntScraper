@@ -26,6 +26,7 @@ export const getJobs = () => api.get('/jobs');
 export const searchJobs = (query) => api.get(`/jobs/search`, { params: { query } });
 export const scrapeJobs = (source) => api.post(`/scrape/${source}`);
 export const clearDatabase = () => api.post('/clear_database');
+export const getScrapeStatus = () => api.get('/scrape/status');
 
 export const login = (username, password) => api.post('/login', { username, password });
 export const register = (first_name, username, password) => api.post('/register', { first_name, username, password });

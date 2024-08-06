@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { scrapeJobs } from '../services/api';  
+import { scrapeJobs } from '../services/api';
 import { io } from 'socket.io-client';
 
-const ScrapeButton = ({ source, fetchJobs }) => {
+const ScrapeButton = ({ source, fetchJobs, status }) => {
   const [message, setMessage] = useState('');
   const [scraping, setScraping] = useState(false);
   const socket = io('http://127.0.0.1:5000');
@@ -26,7 +26,7 @@ const ScrapeButton = ({ source, fetchJobs }) => {
   }, [fetchJobs, socket]);
 
   const handleScrape = async () => {
-    const token = localStorage.getItem('token'); 
+    const token = localStorage.getItem('token');
     if (!token) {
       console.error('No token found, please log in.');
       return;
@@ -45,7 +45,7 @@ const ScrapeButton = ({ source, fetchJobs }) => {
 
   return (
     <div className="scrape-button">
-      <button onClick={handleScrape} disabled={scraping}>
+      <button onClick={handleScrape} disabled={scraping || status}>
         Scrape {source}
       </button>
       <div className="scrape-message">

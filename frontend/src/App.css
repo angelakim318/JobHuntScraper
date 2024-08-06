@@ -88,6 +88,11 @@ body {
   background: #555;
 }
 
+.scrape-button button:disabled {
+  background: #888;
+  cursor: not-allowed;
+}
+
 .scrape-message {
   margin-top: 10px;
   color: #666;

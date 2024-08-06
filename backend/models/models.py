@@ -1,11 +1,11 @@
 import os
-from sqlalchemy import create_engine, Column, Integer, String, Date, ForeignKey
+from sqlalchemy import create_engine, Column, Integer, String, Date, ForeignKey, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 
-# Load environment variables from .env file
+# Load environment variables from .env 
 load_dotenv()
 
 Base = declarative_base()
@@ -54,6 +54,12 @@ class User(Base):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+class ScrapeStatus(Base):
+    __tablename__ = 'scrape_status'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    source = Column(String, unique=True, nullable=False)
+    scraped = Column(Boolean, default=False)
 
 # Load database credentials from environment variables
 DB_USERNAME = os.getenv('DB_USERNAME')
