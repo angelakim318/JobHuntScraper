@@ -1,5 +1,5 @@
 import os
-from sqlalchemy import create_engine, Column, Integer, String, Date, ForeignKey, Boolean
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -19,7 +19,7 @@ class Job(Base):
     job_type = Column(String, nullable=True)
     location = Column(String, nullable=True)
     benefits = Column(String, nullable=True)
-    posted_date = Column(Date, nullable=True)
+    posted_date = Column(String, nullable=True)  # Changed to String
     qualifications = Column(String, nullable=True)
     job_description = Column(String, nullable=True)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
@@ -35,7 +35,7 @@ class Job(Base):
             'job_type': self.job_type,
             'location': self.location,
             'benefits': self.benefits,
-            'posted_date': self.posted_date,
+            'posted_date': self.posted_date,  # Return as string
             'qualifications': self.qualifications.replace('[', '').replace(']', '').replace('\'', '') if self.qualifications else 'N/A',
             'job_description': self.job_description,
         }

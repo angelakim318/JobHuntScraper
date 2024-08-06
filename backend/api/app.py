@@ -263,14 +263,11 @@ def run_scraper(user_id, source_name, scripts):
                 job_type=job_data.get('job type', 'N/A') if job_data.get('job type', 'N/A') != 'N/A' else None,
                 location=job_data['location'] if job_data['location'] != 'N/A' else None,
                 benefits=job_data.get('benefits', 'N/A') if job_data.get('benefits', 'N/A') != 'N/A' else None,
-                posted_date=pd.to_datetime(job_data.get('posted date', 'N/A'), errors='coerce') if job_data.get('posted date', 'N/A') != 'N/A' else None,
+                posted_date=job_data.get('posted date', 'N/A'),  # Store as string
                 qualifications=job_data.get('qualifications', 'N/A') if 'qualifications' in job_data and job_data['qualifications'] != 'N/A' else None,
                 job_description=job_data['job description'].replace('\n', '<br>') if 'job description' in job_data and job_data['job description'] != 'N/A' else None,
                 user_id=user_id
             )
-
-            if job.posted_date and pd.isna(job.posted_date):
-                job.posted_date = None
 
             session.add(job)
 
