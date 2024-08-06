@@ -24,6 +24,7 @@ api.interceptors.response.use((response) => {
 
 export const getJobs = () => api.get('/jobs');
 export const searchJobs = (query) => api.get(`/jobs/search`, { params: { query } });
+export const filterJobs = (location) => api.get(`/jobs/filter`, { params: { location } });
 export const scrapeJobs = (source) => api.post(`/scrape/${source}`);
 export const clearDatabase = () => api.post('/clear_database');
 export const getScrapeStatus = () => api.get('/scrape/status');

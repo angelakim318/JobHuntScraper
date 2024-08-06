@@ -96,8 +96,32 @@ def search_jobs():
     user_id = get_jwt_identity()
     session = SessionLocal()
     try:
-        query = request.args.get('query')
+        query = request.args.get('query', '')
         jobs = session.query(Job).filter(Job.title.ilike(f'%{query}%'), Job.user_id == user_id).all()
+        jobs_list = [job.to_dict() for job in jobs]
+        for job in jobs_list:
+            for key, value in job.items():
+                if value is None:
+                    job[key] = 'N/A'
+        return jsonify(jobs_list)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        session.close()
+
+@app.route('/api/jobs/filter', methods=['GET'])
+@jwt_required()
+def filter_jobs():
+    user_id = get_jwt_identity()
+    session = SessionLocal()
+    try:
+        location = request.args.get('location', '')
+        filters = [Job.user_id == user_id]
+        
+        if location and location != "All Locations":
+            filters.append(Job.location == location)
+        
+        jobs = session.query(Job).filter(*filters).all()
         jobs_list = [job.to_dict() for job in jobs]
         for job in jobs_list:
             for key, value in job.items():

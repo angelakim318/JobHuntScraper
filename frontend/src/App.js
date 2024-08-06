@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { getJobs, searchJobs, clearDatabase, getScrapeStatus } from './services/api';
+import { getJobs, searchJobs, filterJobs, clearDatabase, getScrapeStatus } from './services/api';
 import JobList from './components/JobList';
 import SearchBar from './components/SearchBar';
 import ScrapeButton from './components/ScrapeButton';
@@ -58,12 +58,21 @@ function App() {
     }
   }, [auth, fetchJobs, fetchScrapeStatus]);
 
-  const handleSearch = async (query, location) => {
+  const handleSearch = async (query) => {
     try {
-      const response = await searchJobs(query, location);
+      const response = await searchJobs(query);
       setJobs(response.data);
     } catch (error) {
       console.error('Error searching jobs:', error);
+    }
+  };
+
+  const handleFilter = async (location) => {
+    try {
+      const response = await filterJobs(location);
+      setJobs(response.data);
+    } catch (error) {
+      console.error('Error filtering jobs:', error);
     }
   };
 
@@ -104,7 +113,7 @@ function App() {
                   <ScrapeButton source="simplyhired" fetchJobs={fetchJobs} status={scrapeStatus.simplyhired} onScrapeComplete={fetchScrapeStatus} />
                   <button onClick={handleClearDatabase} className="clear-button">Clear Database</button>
                 </div>
-                <SearchBar onSearch={handleSearch} locations={locations} />
+                <SearchBar onSearch={handleSearch} onFilter={handleFilter} locations={locations} />
                 <JobList jobs={jobs} />
               </>} />
               <Route path="/job/:id" element={<JobDetail jobs={jobs} />} />
