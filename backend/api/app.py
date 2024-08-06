@@ -171,7 +171,9 @@ def run_scraper(user_id, source_name, scripts):
 
     combined_df = pd.read_csv(combined_csv_path)
     combined_df.fillna('N/A', inplace=True)
-    combined_df['qualifications'] = combined_df['qualifications'].apply(lambda x: ', '.join(eval(x)) if isinstance(x, str) and x.startswith('[') else x)
+
+    if 'qualifications' in combined_df.columns:
+        combined_df['qualifications'] = combined_df['qualifications'].apply(lambda x: ', '.join(eval(x)) if isinstance(x, str) and x.startswith('[') else x)
 
     engine = create_engine(DATABASE_URL)
     session = SessionLocal()
@@ -183,11 +185,11 @@ def run_scraper(user_id, source_name, scripts):
                 url=job_data['url'] if job_data['url'] != 'N/A' else None,
                 title=job_data['title'] if job_data['title'] != 'N/A' else None,
                 company=job_data['company'] if job_data['company'] != 'N/A' else None,
-                job_type=job_data['job type'] if job_data['job type'] != 'N/A' else None,
+                job_type=job_data.get('job type', 'N/A') if job_data.get('job type', 'N/A') != 'N/A' else None,
                 location=job_data['location'] if job_data['location'] != 'N/A' else None,
-                benefits=job_data['benefits'] if job_data['benefits'] != 'N/A' else None,
-                posted_date=pd.to_datetime(job_data['posted date'], errors='coerce') if job_data['posted date'] != 'N/A' else None,
-                qualifications=job_data['qualifications'] if job_data['qualifications'] != 'N/A' else None,
+                benefits=job_data.get('benefits', 'N/A') if job_data.get('benefits', 'N/A') != 'N/A' else None,
+                posted_date=pd.to_datetime(job_data.get('posted date', 'N/A'), errors='coerce') if job_data.get('posted date', 'N/A') != 'N/A' else None,
+                qualifications=job_data.get('qualifications', 'N/A') if 'qualifications' in job_data and job_data['qualifications'] != 'N/A' else None,
                 job_description=job_description.replace('\n', '<br>') if job_description != 'N/A' else None,
                 user_id=user_id
             )
@@ -204,6 +206,7 @@ def run_scraper(user_id, source_name, scripts):
         return f'Error loading {source_name} data into database: {e}'
     finally:
         session.close()
+
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)

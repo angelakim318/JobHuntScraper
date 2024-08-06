@@ -88,7 +88,6 @@ function App() {
                   <ScrapeButton source="stackoverflow" fetchJobs={fetchJobs} />
                   <ScrapeButton source="simplyhired" fetchJobs={fetchJobs} />
                   <button onClick={handleClearDatabase} className="clear-button">Clear Database</button>
-                  <p className="scrape-note">Note: Scraping will take around 30 minutes to complete.</p>
                 </div>
                 <SearchBar onSearch={handleSearch} locations={locations} />
                 <JobList jobs={jobs} />
