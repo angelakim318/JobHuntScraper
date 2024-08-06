@@ -37,6 +37,7 @@ function App() {
   const fetchScrapeStatus = useCallback(async () => {
     try {
       const response = await getScrapeStatus();
+      console.log('Fetch scrape status response:', response.data);
       setScrapeStatus(response.data);
     } catch (error) {
       console.error('Error fetching scrape status:', error);
@@ -82,6 +83,8 @@ function App() {
     }
   };
 
+  console.log('App render:', scrapeStatus);
+
   return (
     <div className="App">
       <div className="navbar">
@@ -96,9 +99,9 @@ function App() {
             <>
               <Route path="/" element={<>
                 <div className="scrape-buttons">
-                  <ScrapeButton source="remoteco" fetchJobs={fetchJobs} status={scrapeStatus.remoteco} />
-                  <ScrapeButton source="stackoverflow" fetchJobs={fetchJobs} status={scrapeStatus.stackoverflow} />
-                  <ScrapeButton source="simplyhired" fetchJobs={fetchJobs} status={scrapeStatus.simplyhired} />
+                  <ScrapeButton source="remoteco" fetchJobs={fetchJobs} status={scrapeStatus.remoteco} onScrapeComplete={fetchScrapeStatus} />
+                  <ScrapeButton source="stackoverflow" fetchJobs={fetchJobs} status={scrapeStatus.stackoverflow} onScrapeComplete={fetchScrapeStatus} />
+                  <ScrapeButton source="simplyhired" fetchJobs={fetchJobs} status={scrapeStatus.simplyhired} onScrapeComplete={fetchScrapeStatus} />
                   <button onClick={handleClearDatabase} className="clear-button">Clear Database</button>
                 </div>
                 <SearchBar onSearch={handleSearch} locations={locations} />
