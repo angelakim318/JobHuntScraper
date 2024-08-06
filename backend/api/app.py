@@ -12,7 +12,7 @@ import pandas as pd
 import subprocess
 from sqlalchemy import create_engine
 
-# Load environment variables from .env file
+# Load environment variables from .env 
 load_dotenv()
 
 app = Flask(__name__)
@@ -171,6 +171,7 @@ def run_scraper(user_id, source_name, scripts):
 
     combined_df = pd.read_csv(combined_csv_path)
     combined_df.fillna('N/A', inplace=True)
+    # print(combined_df.head())  # verify CSV data
 
     if 'qualifications' in combined_df.columns:
         combined_df['qualifications'] = combined_df['qualifications'].apply(lambda x: ', '.join(eval(x)) if isinstance(x, str) and x.startswith('[') else x)
@@ -180,7 +181,7 @@ def run_scraper(user_id, source_name, scripts):
 
     try:
         for _, job_data in combined_df.iterrows():
-            job_description = job_data.get('job_description', 'N/A')
+            job_description = job_data.get('job description', 'N/A')  
             job = Job(
                 url=job_data['url'] if job_data['url'] != 'N/A' else None,
                 title=job_data['title'] if job_data['title'] != 'N/A' else None,
@@ -206,7 +207,6 @@ def run_scraper(user_id, source_name, scripts):
         return f'Error loading {source_name} data into database: {e}'
     finally:
         session.close()
-
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)

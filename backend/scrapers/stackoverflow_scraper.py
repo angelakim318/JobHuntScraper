@@ -1,7 +1,7 @@
 import sys
 import os
 
-# Ensure the path to the backend folder is correctly added to the system path
+# Path to the backend folder added to the system path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 from sqlalchemy import create_engine
@@ -82,7 +82,7 @@ def scrape_stackoverflow_jobs():
                     'company': company,
                     'location': location,
                     'link': link,
-                    'job type': 'N/A'  # Add a default value for job type
+                    'job type': 'N/A'  
                 })
 
             return job_details_list
