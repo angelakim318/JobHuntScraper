@@ -273,7 +273,7 @@ def run_scraper(user_id, source_name, scripts):
         return f'CSV file {combined_csv_path} was not found.'
 
     combined_df = pd.read_csv(combined_csv_path)
-    combined_df.fillna('N/A', inplace=True)  # Fill NA values with 'N/A'
+    combined_df.fillna('N/A', inplace=True)  # Fill missing values with N/A
 
     if 'qualifications' in combined_df.columns:
         combined_df['qualifications'] = combined_df['qualifications'].apply(lambda x: ', '.join(eval(x)) if isinstance(x, str) and x.startswith('[') else x)
@@ -290,7 +290,7 @@ def run_scraper(user_id, source_name, scripts):
                 job_type=job_data.get('job type', 'N/A') if job_data.get('job type', 'N/A') != 'N/A' else None,
                 location=job_data['location'] if job_data['location'] != 'N/A' else None,
                 benefits=job_data.get('benefits', 'N/A') if job_data.get('benefits', 'N/A') != 'N/A' else None,
-                posted_date=job_data.get('posted date', 'N/A'),  # Store as string
+                posted_date=job_data.get('posted date', 'N/A'),  
                 qualifications=job_data.get('qualifications', 'N/A') if 'qualifications' in job_data and job_data['qualifications'] != 'N/A' else None,
                 job_description=job_data['job description'].replace('\n', '<br>') if 'job description' in job_data and job_data['job description'] != 'N/A' else None,
                 user_id=user_id
