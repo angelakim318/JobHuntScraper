@@ -31,6 +31,9 @@ const Login = ({ setAuth, setFirstName }) => {
 
   return (
     <div className="auth-container">
+      <p className="intro-text">
+        Welcome to JobHuntScraper! This web application allows you to scrape job listings from Remote.co, Stackoverflow.jobs, and SimplyHired into one convenient location. You can start scraping, view job listings, and filter them by job title or location. Please register and/or login to get started.
+      </p>
       <h2>Login</h2>
       <form onSubmit={handleSubmit}>
         <input

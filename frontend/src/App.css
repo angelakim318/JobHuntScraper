@@ -68,8 +68,8 @@ body {
 
 .search-bar input, .filter-bar select {
   width: 300px; 
-  font-size: 14px;
-  padding: 10px;
+  font-size: 16px;
+  padding: 12px;
   margin-right: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -77,13 +77,13 @@ body {
 }
 
 .primary-button {
-  padding: 10px 20px;
+  padding: 12px 24px;
+  font-size: 16px;
   background: #009688;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 14px;
   box-sizing: border-box;
   min-width: 150px; 
   text-align: center;
@@ -110,7 +110,8 @@ body {
 }
 
 .scrape-button button {
-  padding: 10px 20px;
+  padding: 12px 24px;
+  font-size: 16px;
   min-width: 150px;
   text-align: center;
   margin-bottom: 20px;
@@ -126,10 +127,10 @@ body {
   background: white;
   color: #009688;
   border: 2px solid #009688;
-  padding: 10px 20px;
+  padding: 12px 24px;
+  font-size: 16px;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 14px;
 }
 
 .logout-button:hover {
@@ -156,13 +157,15 @@ body {
 }
 
 .auth-container input {
-  padding: 10px;
+  padding: 12px; 
+  font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 5px;
 }
 
 .auth-container button {
-  padding: 10px 20px;
+  padding: 12px 24px;
+  font-size: 16px;
   background: #009688;
   color: white;
   border: none;
@@ -175,7 +178,17 @@ body {
 }
 
 .auth-container p {
-  color: red;
+  color: #333;
+  font-size: 14px;
+}
+
+.auth-container p a {
+  color: #00796B;
+  text-decoration: none;
+}
+
+.auth-container p a:hover {
+  text-decoration: underline;
 }
 
 button.primary-button.clear-button {
@@ -191,13 +204,13 @@ button.primary-button.clear-button:hover {
 
 .filter-bar button, .search-bar button {
   width: auto; 
-  padding: 10px 20px;
+  padding: 12px 24px;
+  font-size: 16px;
   background: #009688;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 14px;
   text-align: center;
 }
 
@@ -221,4 +234,11 @@ button.primary-button.clear-button:hover {
   font-size: 1.5rem;
   font-weight: bold;
   color: #009688;
+}
+
+.intro-text {
+  font-size: 16px;
+  margin-bottom: 20px;
+  color: #333;
+  text-align: center;
 }
