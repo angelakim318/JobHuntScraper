@@ -139,7 +139,7 @@ body {
 
 .auth-container {
   max-width: 400px;
-  margin: 50px auto;
+  margin: 20px auto 50px;
   padding: 20px;
   background: white;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -158,7 +158,7 @@ body {
 
 .auth-container input {
   padding: 12px; 
-  font-size: 16px;
+  font-size: 14px;
   border: 1px solid #ccc;
   border-radius: 5px;
 }
@@ -179,7 +179,7 @@ body {
 
 .auth-container p {
   color: #333;
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .auth-container p a {
@@ -237,8 +237,9 @@ button.primary-button.clear-button:hover {
 }
 
 .intro-text {
-  font-size: 16px;
-  margin-bottom: 20px;
+  font-size: 18px;
   color: #333;
   text-align: center;
+  margin: 20px auto;
+  max-width: 600px;
 }

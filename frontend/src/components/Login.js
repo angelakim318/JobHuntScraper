@@ -30,32 +30,34 @@ const Login = ({ setAuth, setFirstName }) => {
   };
 
   return (
-    <div className="auth-container">
+    <div className="auth-wrapper">
       <p className="intro-text">
         Welcome to JobHuntScraper! This web application allows you to scrape job listings from Remote.co, Stackoverflow.jobs, and SimplyHired into one convenient location. You can start scraping, view job listings, and filter them by job title or location. Please register and/or login to get started.
       </p>
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <button type="submit">Login</button>
-      </form>
-      {message && <p>{message}</p>}
-      <p>
-        Don't have an account? <Link to="/register">Register here</Link>
-      </p>
+      <div className="auth-container">
+        <h2>Login</h2>
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <button type="submit">Login</button>
+        </form>
+        {message && <p>{message}</p>}
+        <p>
+          Don't have an account? <Link to="/register">Register here</Link>
+        </p>
+      </div>
     </div>
   );
 };
