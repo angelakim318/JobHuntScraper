@@ -16,6 +16,7 @@ body {
 .navbar {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   background-color: #009688;
   padding: 10px 20px;
   color: white;
@@ -24,6 +25,21 @@ body {
 .navbar h1 {
   margin: 0;
   font-size: 1.5rem;
+}
+
+.logout-button {
+  background: white;
+  color: #009688;
+  border: 2px solid #009688;
+  padding: 8px 16px;
+  font-size: 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 0;
+}
+
+.logout-button:hover {
+  background: #E0F2F1;
 }
 
 .job-list {
@@ -123,20 +139,6 @@ body {
   text-align: center;
 }
 
-.logout-button {
-  background: white;
-  color: #009688;
-  border: 2px solid #009688;
-  padding: 12px 24px;
-  font-size: 16px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.logout-button:hover {
-  background: #E0F2F1;
-}
-
 .auth-container {
   max-width: 400px;
   margin: 30px auto 50px;
@@ -231,13 +233,13 @@ button.primary-button.clear-button:hover {
 }
 
 .instruction-text .welcome {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   font-weight: bold;
   color: #333;
 }
 
 .intro-text {
-  font-size: 19px;
+  font-size: 22px;
   color: #333;
   text-align: center;
   margin: 20px auto;
@@ -257,7 +259,8 @@ button.primary-button.clear-button:hover {
 .job-title-detail {
   text-align: center;
   color: #009688;
-  font-size: 1.5rem;
+  font-size: 1.7rem;
+  margin-top: 10px;
 }
 
 .job-info p {
@@ -282,6 +285,7 @@ button.primary-button.clear-button:hover {
 .job-detail .button-container {
   margin-top: 40px;
   text-align: center;
+  margin-bottom: 20px;
 }
 
 .job-detail .back-button {

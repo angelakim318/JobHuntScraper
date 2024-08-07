@@ -104,7 +104,7 @@ function App() {
     <div className="App">
       <div className="navbar">
         <h1>JobHuntScraper</h1>
-        {auth && <button onClick={handleLogout} className="primary-button logout-button">Logout</button>}
+        {auth && <button onClick={handleLogout} className="logout-button">Logout</button>}
       </div>
       <div className="container">
         <Routes>
@@ -114,7 +114,7 @@ function App() {
             <>
               <Route path="/" element={<>
                 <div className="instruction-text">
-                  <span className="welcome">{`Welcome ${firstName.charAt(0).toUpperCase() + firstName.slice(1)}!`}</span><br/>
+                  <span className="welcome">{`Welcome ${firstName.charAt(0).toUpperCase() + firstName.slice(1)}!`}</span><br/><br/>
                   Use the scrape buttons below to collect job postings from <strong>Remote.co</strong>, <strong>Stackoverflow.jobs</strong>, and <strong>SimplyHired</strong>. To see the latest job listings, click <strong>Clear Database</strong> to start over. The scraped jobs will be listed below.
                 </div>
                 <div className="scrape-buttons">
