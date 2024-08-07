@@ -109,6 +109,7 @@ body {
   padding: 10px 20px;
   min-width: 150px;
   text-align: center;
+  margin-bottom: 20px;
 }
 
 .scrape-message {
@@ -178,7 +179,6 @@ button.primary-button.clear-button {
   color: #3399ff;
   border: 2px solid #3399ff;
   padding: 8px 18px;
-  margin-bottom: 20px;
 }
 
 button.primary-button.clear-button:hover {
