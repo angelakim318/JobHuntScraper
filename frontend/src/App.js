@@ -7,6 +7,7 @@ import JobDetail from './components/JobDetail';
 import Register from './components/Register';
 import Login from './components/Login';
 import { BrowserRouter as Router, Route, Routes, Navigate, useNavigate } from 'react-router-dom';
+import { io } from 'socket.io-client';
 import './App.css';
 
 function App() {
@@ -15,7 +16,7 @@ function App() {
   const [locations, setLocations] = useState([]);
   const [scrapeStatus, setScrapeStatus] = useState({});
   const [firstName, setFirstName] = useState('');
-
+  const [globalMessage, setGlobalMessage] = useState('');
   const navigate = useNavigate();
 
   const fetchJobs = useCallback(async () => {
@@ -62,6 +63,22 @@ function App() {
       fetchScrapeStatus();
     }
   }, [auth, fetchJobs, fetchScrapeStatus]);
+
+  useEffect(() => {
+    const socket = io('http://127.0.0.1:5000');
+    socket.on('scrape_complete', (data) => {
+      setGlobalMessage(`${data.source} scraping completed`);
+      setTimeout(() => setGlobalMessage(''), 5000);
+    });
+    socket.on('scrape_error', (data) => {
+      setGlobalMessage(`Error: ${data.error}`);
+    });
+
+    return () => {
+      socket.off('scrape_complete');
+      socket.off('scrape_error');
+    };
+  }, []);
 
   const handleSearch = async (query) => {
     try {
@@ -121,9 +138,9 @@ function App() {
                   <button onClick={handleClearDatabase} className="primary-button clear-button">Clear Database</button>
                 </div>
                 <div className="scrape-buttons">
-                  <ScrapeButton source="remoteco" fetchJobs={fetchJobs} status={scrapeStatus.remoteco} onScrapeComplete={fetchScrapeStatus} />
-                  <ScrapeButton source="stackoverflow" fetchJobs={fetchJobs} status={scrapeStatus.stackoverflow} onScrapeComplete={fetchScrapeStatus} />
-                  <ScrapeButton source="simplyhired" fetchJobs={fetchJobs} status={scrapeStatus.simplyhired} onScrapeComplete={fetchScrapeStatus} />
+                  <ScrapeButton source="remoteco" fetchJobs={fetchJobs} status={scrapeStatus.remoteco} onScrapeComplete={fetchScrapeStatus} globalMessage={globalMessage} setGlobalMessage={setGlobalMessage} />
+                  <ScrapeButton source="stackoverflow" fetchJobs={fetchJobs} status={scrapeStatus.stackoverflow} onScrapeComplete={fetchScrapeStatus} globalMessage={globalMessage} setGlobalMessage={setGlobalMessage} />
+                  <ScrapeButton source="simplyhired" fetchJobs={fetchJobs} status={scrapeStatus.simplyhired} onScrapeComplete={fetchScrapeStatus} globalMessage={globalMessage} setGlobalMessage={setGlobalMessage} />
                 </div>
                 <SearchBar onSearch={handleSearch} onFilter={handleFilter} locations={locations} />
                 <JobList jobs={jobs} />

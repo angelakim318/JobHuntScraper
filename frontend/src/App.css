@@ -109,6 +109,13 @@ body {
   background: #00796B;
 }
 
+.primary-button:disabled {
+  background: #cccccc; /* Gray out the button */
+  color: #666666; /* Change text color */
+  cursor: not-allowed; /* Change cursor to indicate disabled */
+  border: none; /* Remove border */
+}
+
 .scrape-buttons {
   display: flex;
   justify-content: center;
