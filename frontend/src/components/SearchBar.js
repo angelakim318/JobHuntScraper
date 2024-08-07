@@ -23,7 +23,7 @@ const SearchBar = ({ onSearch, onFilter, locations }) => {
           value={query} 
           onChange={(e) => setQuery(e.target.value)} 
         />
-        <button type="submit">Filter Titles</button>
+        <button type="submit" className="primary-button">Filter Titles</button>
       </form>
 
       <form onSubmit={handleFilter} className="filter-bar">
@@ -33,7 +33,7 @@ const SearchBar = ({ onSearch, onFilter, locations }) => {
             <option key={index} value={location}>{location}</option>
           ))}
         </select>
-        <button type="submit">Filter Locations</button>
+        <button type="submit" className="primary-button">Filter Locations</button>
       </form>
     </div>
   );

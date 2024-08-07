@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { login } from '../services/api'; 
+import { login } from '../services/api';
 
 const Login = ({ setAuth }) => {
   const [username, setUsername] = useState('');
@@ -17,6 +17,7 @@ const Login = ({ setAuth }) => {
       if (response && response.data && response.data.access_token) {
         setAuth(true);
         localStorage.setItem('token', response.data.access_token);
+        localStorage.setItem('first_name', response.data.first_name); // Store first name
         navigate('/');
       } else {
         setMessage('Login failed: Invalid response from server.');

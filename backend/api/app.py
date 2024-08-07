@@ -64,8 +64,11 @@ def login():
         user = session.query(User).filter_by(username=username).first()
         if user and user.check_password(password):
             access_token = create_access_token(identity=user.id)
-            response = jsonify(access_token=access_token)
-            return response, 200
+            response = {
+                'access_token': access_token,
+                'first_name': user.first_name  # Include first name in response
+            }
+            return jsonify(response), 200
         return jsonify({"msg": "Invalid username or password"}), 401
     except SQLAlchemyError as e:
         return jsonify({"msg": str(e)}), 500

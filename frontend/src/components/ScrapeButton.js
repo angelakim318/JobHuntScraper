@@ -57,7 +57,7 @@ const ScrapeButton = ({ source, fetchJobs, status, onScrapeComplete }) => {
 
   return (
     <div className="scrape-button">
-      <button onClick={handleScrape} disabled={scraping || status}>
+      <button onClick={handleScrape} disabled={scraping || status} className="primary-button">
         Scrape {source}
       </button>
       <div className="scrape-message">

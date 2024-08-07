@@ -14,6 +14,7 @@ function App() {
   const [auth, setAuth] = useState(false);
   const [locations, setLocations] = useState([]);
   const [scrapeStatus, setScrapeStatus] = useState({});
+  const [firstName, setFirstName] = useState('');
 
   const navigate = useNavigate();
 
@@ -46,8 +47,10 @@ function App() {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
+    const userFirstName = localStorage.getItem('first_name'); // Retrieve first name
     if (token) {
       setAuth(true);
+      setFirstName(userFirstName);
     }
   }, []);
 
@@ -78,6 +81,7 @@ function App() {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('first_name'); // Clear first name too
     setAuth(false);
     navigate('/login');
   };
@@ -98,7 +102,7 @@ function App() {
     <div className="App">
       <div className="navbar">
         <h1>JobHuntScraper</h1>
-        {auth && <button onClick={handleLogout} className="logout-button">Logout</button>}
+        {auth && <button onClick={handleLogout} className="primary-button logout-button">Logout</button>}
       </div>
       <div className="container">
         <Routes>
@@ -107,11 +111,17 @@ function App() {
           {auth ? (
             <>
               <Route path="/" element={<>
+                <div className="instruction-text">
+                  <p>Welcome {firstName}!</p>
+                  <p>Use the scrape buttons below to collect job postings from Remote.co, Stackoverflow.jobs, and SimplyHired. To see the latest job listings, click <strong>Clear Database</strong> to start over. The scraped jobs will be listed below.</p>
+                </div>
                 <div className="scrape-buttons">
                   <ScrapeButton source="remoteco" fetchJobs={fetchJobs} status={scrapeStatus.remoteco} onScrapeComplete={fetchScrapeStatus} />
                   <ScrapeButton source="stackoverflow" fetchJobs={fetchJobs} status={scrapeStatus.stackoverflow} onScrapeComplete={fetchScrapeStatus} />
                   <ScrapeButton source="simplyhired" fetchJobs={fetchJobs} status={scrapeStatus.simplyhired} onScrapeComplete={fetchScrapeStatus} />
-                  <button onClick={handleClearDatabase} className="clear-button">Clear Database</button>
+                </div>
+                <div className="clear-database-container">
+                  <button onClick={handleClearDatabase} className="primary-button clear-button">Clear Database</button>
                 </div>
                 <SearchBar onSearch={handleSearch} onFilter={handleFilter} locations={locations} />
                 <JobList jobs={jobs} />
