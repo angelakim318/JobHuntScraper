@@ -114,7 +114,7 @@ function App() {
             <>
               <Route path="/" element={<>
                 <div className="instruction-text">
-                  {`Welcome ${firstName}!`}<br/>
+                  {`Welcome ${firstName.charAt(0).toUpperCase() + firstName.slice(1)}!`}<br/>
                   Use the scrape buttons below to collect job postings from Remote.co, Stackoverflow.jobs, and SimplyHired. To see the latest job listings, click <strong>Clear Database</strong> to start over. The scraped jobs will be listed below.
                 </div>
                 <div className="scrape-buttons">

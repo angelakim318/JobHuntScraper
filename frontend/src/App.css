@@ -39,13 +39,17 @@ body {
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 
-.job-title h3 {
-  color: #3399ff;
+.job-title-link {
+  text-decoration: none;
+}
+
+.job-title {
   margin: 0 0 10px;
+  color: #3399ff;
   text-decoration: none; 
 }
 
-.job-title:hover h3 {
+.job-title-link:hover .job-title {
   text-decoration: underline; 
 }
 
@@ -53,7 +57,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 20px;
+  margin-top: 30px;
 }
 
 .search-bar, .filter-bar {
@@ -203,7 +207,7 @@ button.primary-button.clear-button:hover {
 
 .instruction-text {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 5px;
   font-size: 1.2rem;
   color: #ffffff;
   background-color: #3399ff;
