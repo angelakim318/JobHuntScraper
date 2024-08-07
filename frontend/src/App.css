@@ -139,7 +139,7 @@ body {
 
 .auth-container {
   max-width: 400px;
-  margin: 20px auto 50px;
+  margin: 30px auto 50px;
   padding: 20px;
   background: white;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -158,7 +158,7 @@ body {
 
 .auth-container input {
   padding: 12px; 
-  font-size: 14px;
+  font-size: 15px;
   border: 1px solid #ccc;
   border-radius: 5px;
 }
@@ -179,7 +179,7 @@ body {
 
 .auth-container p {
   color: #333;
-  font-size: 16px;
+  font-size: 17px;
 }
 
 .auth-container p a {
@@ -233,13 +233,68 @@ button.primary-button.clear-button:hover {
 .instruction-text .welcome {
   font-size: 1.5rem;
   font-weight: bold;
-  color: #009688;
+  color: #333;
 }
 
 .intro-text {
-  font-size: 18px;
+  font-size: 19px;
   color: #333;
   text-align: center;
   margin: 20px auto;
   max-width: 600px;
+}
+
+.job-detail {
+  background: white;
+  padding: 20px;
+  margin: 20px auto;
+  max-width: 800px;
+  border: 2px solid #00796B;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.job-title-detail {
+  text-align: center;
+  color: #009688;
+  font-size: 1.5rem;
+}
+
+.job-info p {
+  margin: 15px 0;
+}
+
+.job-info p strong {
+  font-size: 1.2rem;
+}
+
+.job-detail p {
+  font-size: 16px;
+  color: #333;
+}
+
+.job-description {
+  margin-top: 15px;
+  font-size: 16px;
+  color: #333;
+}
+
+.job-detail .button-container {
+  margin-top: 40px;
+  text-align: center;
+}
+
+.job-detail .back-button {
+  padding: 10px 20px;
+  background: #009688;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  text-decoration: none;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.job-detail .back-button:hover {
+  background: #00796B;
 }
