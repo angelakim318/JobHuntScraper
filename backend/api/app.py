@@ -1,6 +1,5 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from flask_socketio import SocketIO, emit
 from backend.models.models import SessionLocal, Job, User, ScrapeStatus, DATABASE_URL, init_db
 from sqlalchemy.exc import SQLAlchemyError
 from flask_bcrypt import Bcrypt
@@ -22,7 +21,6 @@ app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
 
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
-socketio = SocketIO(app, cors_allowed_origins="*")
 
 # Initialize the database
 init_db()
@@ -159,7 +157,6 @@ def scrape_source(source):
             session.add(scrape_status)
 
         session.commit()
-        socketio.emit('scrape_complete', {'source': source})
         return jsonify({"message": f"{source} scraping completed"}), 202
     except SQLAlchemyError as e:
         session.rollback()
@@ -247,4 +244,4 @@ def run_scraper(user_id, source_name, scripts):
         session.close()
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True)
+    app.run(debug=True)
