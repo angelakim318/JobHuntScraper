@@ -16,13 +16,13 @@ from sqlalchemy import create_engine
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
+CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
 
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, cors_allowed_origins="http://localhost:3000")
 
 # Initialize the database
 init_db()
@@ -136,93 +136,31 @@ def filter_jobs():
     finally:
         session.close()
 
-@app.route('/api/scrape/remoteco', methods=['POST'])
+@app.route('/api/scrape/<source>', methods=['POST'])
 @jwt_required()
-def scrape_remoteco():
+def scrape_source(source):
     user_id = get_jwt_identity()
     session = SessionLocal()
     try:
-        scrape_status = session.query(ScrapeStatus).filter_by(source='remoteco').first()
+        scrape_status = session.query(ScrapeStatus).filter_by(source=source, user_id=user_id).first()
         if scrape_status and scrape_status.scraped:
-            return jsonify({"message": "Remote.co has already been scraped"}), 400
+            return jsonify({"message": f"{source.capitalize()} has already been scraped"}), 400
 
-        result = run_scraper(user_id, "remoteco", [
-            "../scrapers/remoteco_scraper.py",
-            "../scrapers/remoteco_details.py",
-            "../merge/remoteco_merge.py"
+        result = run_scraper(user_id, source, [
+            f"../scrapers/{source}_scraper.py",
+            f"../scrapers/{source}_details.py",
+            f"../merge/{source}_merge.py"
         ])
 
         if scrape_status:
             scrape_status.scraped = True
         else:
-            scrape_status = ScrapeStatus(source='remoteco', scraped=True)
+            scrape_status = ScrapeStatus(source=source, scraped=True, user_id=user_id)
             session.add(scrape_status)
 
         session.commit()
-        socketio.emit('scrape_complete', {'source': 'remoteco'})
-        return jsonify({"message": "remoteco scraping completed"}), 202
-    except SQLAlchemyError as e:
-        session.rollback()
-        return jsonify({"error": str(e)}), 500
-    finally:
-        session.close()
-
-@app.route('/api/scrape/stackoverflow', methods=['POST'])
-@jwt_required()
-def scrape_stackoverflow():
-    user_id = get_jwt_identity()
-    session = SessionLocal()
-    try:
-        scrape_status = session.query(ScrapeStatus).filter_by(source='stackoverflow').first()
-        if scrape_status and scrape_status.scraped:
-            return jsonify({"message": "StackOverflow has already been scraped"}), 400
-
-        result = run_scraper(user_id, "stackoverflow", [
-            "../scrapers/stackoverflow_scraper.py",
-            "../scrapers/stackoverflow_details.py",
-            "../merge/stackoverflow_merge.py"
-        ])
-
-        if scrape_status:
-            scrape_status.scraped = True
-        else:
-            scrape_status = ScrapeStatus(source='stackoverflow', scraped=True)
-            session.add(scrape_status)
-
-        session.commit()
-        socketio.emit('scrape_complete', {'source': 'stackoverflow'})
-        return jsonify({"message": "stackoverflow scraping completed"}), 202
-    except SQLAlchemyError as e:
-        session.rollback()
-        return jsonify({"error": str(e)}), 500
-    finally:
-        session.close()
-
-@app.route('/api/scrape/simplyhired', methods=['POST'])
-@jwt_required()
-def scrape_simplyhired():
-    user_id = get_jwt_identity()
-    session = SessionLocal()
-    try:
-        scrape_status = session.query(ScrapeStatus).filter_by(source='simplyhired').first()
-        if scrape_status and scrape_status.scraped:
-            return jsonify({"message": "SimplyHired has already been scraped"}), 400
-
-        result = run_scraper(user_id, "simplyhired", [
-            "../scrapers/simplyhired_scraper.py",
-            "../scrapers/simplyhired_details.py",
-            "../merge/simplyhired_merge.py"
-        ])
-
-        if scrape_status:
-            scrape_status.scraped = True
-        else:
-            scrape_status = ScrapeStatus(source='simplyhired', scraped=True)
-            session.add(scrape_status)
-
-        session.commit()
-        socketio.emit('scrape_complete', {'source': 'simplyhired'})
-        return jsonify({"message": "simplyhired scraping completed"}), 202
+        socketio.emit('scrape_complete', {'source': source})
+        return jsonify({"message": f"{source} scraping completed"}), 202
     except SQLAlchemyError as e:
         session.rollback()
         return jsonify({"error": str(e)}), 500
@@ -236,7 +174,7 @@ def clear_database():
     try:
         session = SessionLocal()
         session.query(Job).filter_by(user_id=user_id).delete()
-        session.query(ScrapeStatus).delete()
+        session.query(ScrapeStatus).filter_by(user_id=user_id).delete()
         session.commit()
         return jsonify({"message": "Database cleared successfully"}), 200
     except SQLAlchemyError as e:
@@ -245,10 +183,12 @@ def clear_database():
 @app.route('/api/scrape/status', methods=['GET'])
 @jwt_required()
 def scrape_status():
+    user_id = get_jwt_identity()
     session = SessionLocal()
     try:
-        status = {status.source: status.scraped for status in session.query(ScrapeStatus).all()}
-        return jsonify(status)
+        statuses = session.query(ScrapeStatus).filter_by(user_id=user_id).all()
+        status_dict = {status.source: status.scraped for status in statuses}
+        return jsonify(status_dict)
     except SQLAlchemyError as e:
         return jsonify({"error": str(e)}), 500
     finally:

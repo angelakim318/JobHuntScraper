@@ -38,7 +38,6 @@ function App() {
   const fetchScrapeStatus = useCallback(async () => {
     try {
       const response = await getScrapeStatus();
-      console.log('Fetch scrape status response:', response.data);
       setScrapeStatus(response.data);
     } catch (error) {
       console.error('Error fetching scrape status:', error);
@@ -53,15 +52,15 @@ function App() {
       if (userFirstName) {
         setFirstName(userFirstName.charAt(0).toUpperCase() + userFirstName.slice(1).toLowerCase());
       }
+      fetchScrapeStatus();
     }
-  }, []);
+  }, [fetchScrapeStatus]);
 
   useEffect(() => {
     if (auth) {
       fetchJobs();
-      fetchScrapeStatus();
     }
-  }, [auth, fetchJobs, fetchScrapeStatus]);
+  }, [auth, fetchJobs]);
 
   const handleSearch = async (query) => {
     try {
@@ -85,6 +84,8 @@ function App() {
     localStorage.removeItem('token');
     localStorage.removeItem('firstName');
     setAuth(false);
+    setJobs([]);
+    setScrapeStatus({});
     navigate('/login');
   };
 
@@ -97,8 +98,6 @@ function App() {
       console.error('Error clearing database:', error);
     }
   };
-
-  console.log('App render:', scrapeStatus);
 
   return (
     <div className="App">

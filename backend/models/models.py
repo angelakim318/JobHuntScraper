@@ -48,6 +48,7 @@ class User(Base):
     password_hash = Column(String, nullable=False)
 
     jobs = relationship('Job', back_populates='user')
+    scrape_statuses = relationship('ScrapeStatus', back_populates='user')
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -58,8 +59,11 @@ class User(Base):
 class ScrapeStatus(Base):
     __tablename__ = 'scrape_status'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    source = Column(String, unique=True, nullable=False)
+    source = Column(String, nullable=False)
     scraped = Column(Boolean, default=False)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+
+    user = relationship('User', back_populates='scrape_statuses')
 
 # Load database credentials from environment variables
 DB_USERNAME = os.getenv('DB_USERNAME')
