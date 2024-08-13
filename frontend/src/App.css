@@ -141,11 +141,12 @@ body {
 }
 
 .scrape-message {
-  position: absolute;
+  position: relative;
   color: #666;
-  font-size: 12px;
+  font-size: 16px;
   text-align: center;
   width: 100%;
+  margin-top: 10px; 
 }
 
 .auth-container {
