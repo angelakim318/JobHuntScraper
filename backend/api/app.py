@@ -202,7 +202,7 @@ def run_scraper(user_id, source_name, scripts):
         else:
             print(f"{source_name} scraping completed successfully.")
 
-    # Load combined data into database
+    # Load combined data into the database
     csv_file_name = f'{source_name}_combined.csv'
     combined_csv_path = os.path.join(base_path, '..', 'data', csv_file_name)
 
@@ -210,6 +210,12 @@ def run_scraper(user_id, source_name, scripts):
         return f'CSV file {combined_csv_path} was not found.'
 
     combined_df = pd.read_csv(combined_csv_path)
+    
+    # Convert columns containing floats to strings before filling NaNs
+    for column in combined_df.columns:
+        if combined_df[column].dtype == 'float64':
+            combined_df[column] = combined_df[column].astype(str)
+    
     combined_df.fillna('N/A', inplace=True)  # Fill missing values with N/A
 
     if 'qualifications' in combined_df.columns:

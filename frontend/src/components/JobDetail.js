@@ -13,12 +13,12 @@ const JobDetail = ({ jobs }) => {
     <div className="job-detail">
       <h2 className="job-title-detail">{job.title}</h2>
       <div className="job-info">
-        <p><strong>Company:</strong><br />{job.company}</p>
-        <p><strong>Job Type:</strong><br />{job.job_type}</p>
-        <p><strong>Location:</strong><br />{job.location}</p>
-        <p><strong>Benefits:</strong><br />{job.benefits}</p>
-        <p><strong>Posted Date:</strong><br />{job.posted_date}</p>
-        <p><strong>Qualifications:</strong><br />{job.qualifications}</p>
+        <p><strong>Company:</strong><br />{job.company || 'N/A'}</p>
+        <p><strong>Job Type:</strong><br />{job.job_type && job.job_type.toLowerCase() !== 'nan' ? job.job_type : 'N/A'}</p>
+        <p><strong>Location:</strong><br />{job.location || 'N/A'}</p>
+        <p><strong>Benefits:</strong><br />{job.benefits || 'N/A'}</p>
+        <p><strong>Posted Date:</strong><br />{job.posted_date || 'N/A'}</p>
+        <p><strong>Qualifications:</strong><br />{job.qualifications || 'N/A'}</p>
         <p><strong>Job Description:</strong><br /><span className="job-description" dangerouslySetInnerHTML={{ __html: job.job_description || 'N/A' }} /></p>
       </div>
       <div className="button-container">

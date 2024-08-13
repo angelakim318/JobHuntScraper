@@ -31,13 +31,13 @@ class Job(Base):
             'id': self.id,
             'url': self.url,
             'title': self.title,
-            'company': self.company,
-            'job_type': self.job_type,
-            'location': self.location,
-            'benefits': self.benefits,
-            'posted_date': self.posted_date,  
+            'company': self.company if self.company else 'N/A',
+            'job_type': self.job_type if self.job_type and self.job_type.lower() != 'nan' else 'N/A',
+            'location': self.location if self.location else 'N/A',
+            'benefits': self.benefits if self.benefits else 'N/A',
+            'posted_date': self.posted_date if self.posted_date else 'N/A',
             'qualifications': self.qualifications.replace('[', '').replace(']', '').replace('\'', '') if self.qualifications else 'N/A',
-            'job_description': self.job_description,
+            'job_description': self.job_description if self.job_description else 'N/A',
         }
 
 class User(Base):
