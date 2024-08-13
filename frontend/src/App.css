@@ -2,7 +2,7 @@ body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
-  background-color: #E0F2F1;
+  background-color: #E3F2FD;
 }
 
 .container {
@@ -17,7 +17,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #009688;
+  background-color: #1565C0;
   padding: 10px 20px;
   color: white;
 }
@@ -29,8 +29,8 @@ body {
 
 .logout-button {
   background: white;
-  color: #009688;
-  border: 2px solid #009688;
+  color: #1565C0;
+  border: 2px solid #1565C0;
   padding: 8px 16px;
   font-size: 1rem;
   border-radius: 5px;
@@ -39,7 +39,7 @@ body {
 }
 
 .logout-button:hover {
-  background: #E0F2F1;
+  background: #E3F2FD;
 }
 
 .job-list {
@@ -49,8 +49,8 @@ body {
 .job-card {
   padding: 10px;
   margin: 10px 0;
-  background: #B2DFDB;
-  border: 2px solid #00796B;
+  background: #abd2ef;
+  border: 2px solid #0D47A1;
   border-radius: 5px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
@@ -61,7 +61,7 @@ body {
 
 .job-title {
   margin: 0 0 10px;
-  color: #00796B;
+  color: #0D47A1;
   text-decoration: none; 
 }
 
@@ -95,7 +95,7 @@ body {
 .primary-button {
   padding: 12px 24px;
   font-size: 16px;
-  background: #009688;
+  background: #1565C0;
   color: white;
   border: none;
   border-radius: 5px;
@@ -106,14 +106,14 @@ body {
 }
 
 .primary-button:hover {
-  background: #00796B;
+  background: #0D47A1; 
 }
 
 .primary-button:disabled {
-  background: #cccccc; /* Gray out the button */
-  color: #666666; /* Change text color */
-  cursor: not-allowed; /* Change cursor to indicate disabled */
-  border: none; /* Remove border */
+  background: #cccccc; 
+  color: #666666; 
+  cursor: not-allowed; 
+  border: none; 
 }
 
 .scrape-buttons {
@@ -148,7 +148,6 @@ body {
   width: 100%;
 }
 
-
 .auth-container {
   max-width: 400px;
   margin: 30px auto 50px;
@@ -178,7 +177,7 @@ body {
 .auth-container button {
   padding: 12px 24px;
   font-size: 16px;
-  background: #009688;
+  background: #1565C0; 
   color: white;
   border: none;
   border-radius: 5px;
@@ -186,7 +185,7 @@ body {
 }
 
 .auth-container button:hover {
-  background: #00796B;
+  background: #0D47A1;
 }
 
 .auth-container p {
@@ -195,7 +194,7 @@ body {
 }
 
 .auth-container p a {
-  color: #00796B;
+  color: #0D47A1;
   text-decoration: none;
 }
 
@@ -205,20 +204,20 @@ body {
 
 button.primary-button.clear-button {
   background-color: white;
-  color: #009688;
-  border: 2px solid #009688;
+  color: #1565C0;
+  border: 2px solid #1565C0;
   padding: 8px 18px;
 }
 
 button.primary-button.clear-button:hover {
-  background-color: #E0F2F1;
+  background-color: #E3F2FD; 
 }
 
 .filter-bar button, .search-bar button {
   width: auto; 
   padding: 12px 24px;
   font-size: 16px;
-  background: #009688;
+  background: #1565C0;
   color: white;
   border: none;
   border-radius: 5px;
@@ -227,16 +226,16 @@ button.primary-button.clear-button:hover {
 }
 
 .filter-bar button:hover, .search-bar button:hover {
-  background: #00796B;
+  background: #0D47A1; 
 }
 
 .instruction-text {
   text-align: center;
   margin-bottom: 20px;
   font-size: 1.2rem;
-  color: #00796B;  
+  color: #0D47A1; 
   background-color: #ffffff;  
-  border: 2px solid #009688;  
+  border: 2px solid #1565C0; 
   padding: 10px 20px;
   border-radius: 5px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
@@ -261,14 +260,14 @@ button.primary-button.clear-button:hover {
   padding: 20px;
   margin: 20px auto;
   max-width: 800px;
-  border: 2px solid #00796B;
+  border: 2px solid #0D47A1; 
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .job-title-detail {
   text-align: center;
-  color: #009688;
+  color: #1565C0;
   font-size: 1.7rem;
   margin-top: 10px;
 }
@@ -300,7 +299,7 @@ button.primary-button.clear-button:hover {
 
 .job-detail .back-button {
   padding: 10px 20px;
-  background: #009688;
+  background: #1565C0;
   color: white;
   border: none;
   border-radius: 5px;
@@ -310,5 +309,5 @@ button.primary-button.clear-button:hover {
 }
 
 .job-detail .back-button:hover {
-  background: #00796B;
+  background: #0D47A1;
 }
