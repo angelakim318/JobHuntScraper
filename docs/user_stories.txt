@@ -1,0 +1,31 @@
+User Stories
+User Registration
+As a new user, I want to register an account, so that I can log in and use the application.
+User Login
+As a registered user, I want to log in to my account, so that I can access the application and use its features.
+Scrape Jobs from Remote.co
+As a logged-in user, I want to scrape job listings from Remote.co, so that I can gather job postings into one place.
+Scrape Jobs from Stackoverflow.jobs
+As a logged-in user, I want to scrape job listings from Stackoverflow.jobs, so that I can gather job postings into one place.
+Scrape Jobs from SimplyHired
+As a logged-in user, I want to scrape job listings from SimplyHired, so that I can gather job postings into one place.
+View Scraped Jobs
+As a logged-in user, I want to view all the scraped jobs, so that I can see all available listings in one place.
+Filter Jobs by Title
+As a user, I want to filter jobs by title, so that I can find jobs related to a specific role.
+Filter Jobs by Location
+As a user, I want to filter jobs by location, so that I can find jobs in a specific location.
+Clear Job Listings
+As a user, I want to clear all job listings, so that I can remove outdated listings and start a new search with the latest jobs.
+View Detailed Job Information
+As a user, I want to click on a job title to view its detailed information, such as job description, posted date, qualifications, and etc.
+User Logout
+As a user, I want to log out of my account, so that my data remains secure when I exit the application.
+
+Requirements
+The system must allow users to register and log in with proper authentication.
+Users must be able to scrape job postings from Remote.co, Stackoverflow.jobs, and SimplyHired.
+Users should be able to view the scraped jobs in a list and filter them by title or location.
+The system should provide detailed information about each job (title, company, location , benefits, qualifications, etc.).
+Users must be able to clear the job listings and re-scrape for new data.
+Only authenticated users should be able to access the system.
