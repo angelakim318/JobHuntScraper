@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from models.models import SessionLocal, Job, User, ScrapeStatus, DATABASE_URL, init_db
+from models.models import SessionLocal, Job, User, ScrapeStatus, SavedJob, DATABASE_URL, init_db
 from sqlalchemy.exc import SQLAlchemyError
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
@@ -131,6 +131,31 @@ def filter_jobs():
         return jsonify(jobs_list)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    finally:
+        session.close()
+
+@app.route('/api/save_job/<int:job_id>', methods=['POST'])
+@jwt_required() 
+def save_job(job_id):
+    user_id = get_jwt_identity()  # Get logged-in user's ID from JWT token
+    session = SessionLocal()
+
+    try:
+        # Check if the job has already been saved by this user
+        existing_saved_job = session.query(SavedJob).filter_by(user_id=user_id, job_id=job_id).first()
+        if existing_saved_job:
+            return jsonify({"msg": "Job already saved"}), 400
+        
+        # Create a new saved job entry
+        saved_job = SavedJob(user_id=user_id, job_id=job_id)
+        session.add(saved_job)
+        session.commit()
+
+        return jsonify({"msg": "Job saved successfully"}), 201
+
+    except SQLAlchemyError as e:
+        session.rollback()
+        return jsonify({"msg": str(e)}), 500
     finally:
         session.close()
 

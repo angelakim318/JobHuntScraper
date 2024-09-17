@@ -55,6 +55,18 @@ class User(Base):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+    
+class SavedJob(Base):
+    __tablename__ = 'saved_jobs'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    job_id = Column(Integer, ForeignKey('jobs.id'), nullable=False)
+
+    user = relationship('User', back_populates='saved_jobs')
+    job = relationship('Job')
+
+# Add a relationship to the User model
+User.saved_jobs = relationship('SavedJob', back_populates='user')
 
 class ScrapeStatus(Base):
     __tablename__ = 'scrape_status'
