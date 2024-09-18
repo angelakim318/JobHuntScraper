@@ -159,6 +159,37 @@ def save_job(job_id):
     finally:
         session.close()
 
+@app.route('/api/saved_jobs', methods=['GET'])
+@jwt_required()
+def get_saved_jobs():
+    user_id = get_jwt_identity()
+    session = SessionLocal()
+    try:
+        saved_jobs = session.query(SavedJob).filter_by(user_id=user_id).all()
+        jobs_list = [job.job.to_dict() for job in saved_jobs]  # Access the related Job object
+        return jsonify(jobs_list), 200
+    except SQLAlchemyError as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        session.close()
+
+@app.route('/api/saved_jobs/<int:job_id>', methods=['DELETE'])
+@jwt_required()
+def delete_saved_job(job_id):
+    user_id = get_jwt_identity()
+    session = SessionLocal()
+    try:
+        saved_job = session.query(SavedJob).filter_by(user_id=user_id, job_id=job_id).first()
+        if saved_job:
+            session.delete(saved_job)
+            session.commit()
+            return jsonify({"msg": "Job deleted successfully"}), 200
+        return jsonify({"msg": "Job not found"}), 404
+    except SQLAlchemyError as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        session.close()
+
 @app.route('/api/scrape/<source>', methods=['POST'])
 @jwt_required()
 def scrape_source(source):

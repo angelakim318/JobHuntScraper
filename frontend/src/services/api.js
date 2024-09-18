@@ -29,6 +29,8 @@ export const scrapeJobs = (source) => api.post(`/scrape/${source}`);
 export const clearDatabase = () => api.post('/clear_database');
 export const getScrapeStatus = () => api.get('/scrape/status');
 export const saveJob = (jobId) => api.post(`/save_job/${jobId}`);
+export const getSavedJobs = () => api.get('/saved_jobs');
+export const deleteSavedJob = (jobId) => api.delete(`/saved_jobs/${jobId}`);
 
 export const login = (username, password) => api.post('/login', { username, password });
 export const register = (first_name, username, password) => api.post('/register', { first_name, username, password });

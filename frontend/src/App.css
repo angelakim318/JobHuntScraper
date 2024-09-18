@@ -22,12 +22,24 @@ body {
   color: white;
 }
 
+.navbar-title {
+  font-size: 1.7rem;
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.navbar-title:hover {
+  color: #E3F2FD;
+}
+
+
 .navbar h1 {
   margin: 0;
   font-size: 1.5rem;
 }
 
-.logout-button {
+.logout-button, .savedJobs {
   background: white;
   color: #1565C0;
   border: 2px solid #1565C0;
@@ -35,11 +47,17 @@ body {
   font-size: 1rem;
   border-radius: 5px;
   cursor: pointer;
-  margin: 0;
+  margin-left: 10px;
+  text-decoration: none;
 }
 
-.logout-button:hover {
+.logout-button:hover, .savedJobs:hover {
   background: #E3F2FD;
+}
+
+.navbar-buttons {
+  display: flex;
+  gap: 10px;
 }
 
 .job-list {

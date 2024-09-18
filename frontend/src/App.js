@@ -6,7 +6,8 @@ import ScrapeButton from './components/ScrapeButton';
 import JobDetail from './components/JobDetail';
 import Register from './components/Register';
 import Login from './components/Login';
-import { BrowserRouter as Router, Route, Routes, Navigate, useNavigate } from 'react-router-dom';
+import SavedJobs from './components/SavedJobs';
+import { BrowserRouter as Router, Route, Routes, Navigate, useNavigate, Link } from 'react-router-dom';
 import './App.css';
 
 function App() {
@@ -103,8 +104,15 @@ function App() {
   return (
     <div className="App">
       <div className="navbar">
-        <h1>JobHuntScraper</h1>
-        {auth && <button onClick={handleLogout} className="logout-button">Logout</button>}
+        <Link to="/" className="navbar-title">
+          JobHuntScraper
+        </Link>
+        {auth && (
+          <div className="navbar-buttons">
+            <Link to="/saved_jobs" className="savedJobs">My Jobs</Link> 
+            <button onClick={handleLogout} className="logout-button">Logout</button>
+          </div>
+        )}
       </div>
       <div className="container">
         <Routes>
@@ -129,6 +137,7 @@ function App() {
                 <JobList jobs={jobs} />
               </>} />
               <Route path="/job/:id" element={<JobDetail jobs={jobs} />} />
+              <Route path="/saved_jobs" element={<SavedJobs />} />
             </>
           ) : (
             <Route path="*" element={<Navigate to="/login" />} />
