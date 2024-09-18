@@ -330,3 +330,65 @@ button.primary-button.clear-button:hover {
 .job-detail .back-button:hover {
   background: #0D47A1;
 }
+
+.saved-jobs-container {
+  background: white;
+  padding: 20px;
+  border: 2px solid #0D47A1;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  max-width: 800px;
+  margin: 20px auto;
+}
+
+.saved-jobs-container h2 {
+  color: #1565C0;
+  font-size: 1.5rem;
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.saved-jobs-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.saved-job-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  margin: 10px 0;
+  background: #abd2ef;
+  border: 2px solid #0D47A1;
+  border-radius: 5px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.job-title-link {
+  color: #0D47A1;
+  text-decoration: none;
+  font-size: 1.1rem;
+  flex-grow: 1;
+}
+
+.job-title-link:hover {
+  text-decoration: underline;
+}
+
+.delete-button {
+  background: #1565C0;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 12px 24px;
+  font-size: 1rem;
+  cursor: pointer;
+  text-align: center;
+  margin-left: 10px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.delete-button:hover {
+  background: #0D47A1;
+}
