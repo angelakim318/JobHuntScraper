@@ -331,6 +331,25 @@ button.primary-button.clear-button:hover {
   background: #0D47A1;
 }
 
+.save-job-container {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.saved-button {
+  background: #cccccc; 
+  color: #666666; 
+  cursor: not-allowed; 
+  border: none; 
+}
+
+.primary-button:disabled {
+  background: #cccccc; 
+  color: #666666; 
+  cursor: not-allowed; 
+  border: none; 
+}
+
 .saved-jobs-container {
   background: white;
   padding: 20px;
