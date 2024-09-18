@@ -3,6 +3,8 @@ venv/
 
 # Data files
 *.csv
+backend/eda/
+backend/eda/.ipynb_checkpoints/
 
 # Python cache files
 __pycache__/
