@@ -123,7 +123,7 @@ function App() {
               <Route path="/" element={<>
                 <div className="instruction-text">
                   <span className="welcome">{`Welcome ${firstName.charAt(0).toUpperCase() + firstName.slice(1)}!`}</span><br/><br/>
-                  Use the scrape buttons below to collect job postings from <strong>Remote.co</strong>, <strong>Stackoverflow.jobs</strong>, and <strong>SimplyHired</strong>. To see the latest job listings, click <strong>Clear Database</strong> to start over. The scraped jobs will be listed below.
+                  Use the scrape buttons below to collect job postings from <em>Remote.co</em>, <em>Stackoverflow.jobs</em>, and <em>SimplyHired</em>. Save jobs that you’re interested in by clicking "Save Job" on the job's details page. You can access your saved jobs anytime by clicking the "My Jobs" button. To refresh the job listings, click <em>Clear Database</em>.
                 </div>
                 <div className="scrape-buttons">
                   <button onClick={handleClearDatabase} className="primary-button clear-button">Clear Database</button>

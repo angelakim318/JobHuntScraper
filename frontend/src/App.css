@@ -251,7 +251,7 @@ button.primary-button.clear-button:hover {
 .instruction-text {
   text-align: center;
   margin-bottom: 20px;
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   color: #0D47A1; 
   background-color: #ffffff;  
   border: 2px solid #1565C0; 
@@ -261,7 +261,7 @@ button.primary-button.clear-button:hover {
 }
 
 .instruction-text .welcome {
-  font-size: 1.3rem;
+  font-size: 1.5rem;
   font-weight: bold;
   color: #333;
 }

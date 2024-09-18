@@ -32,7 +32,7 @@ const Login = ({ setAuth, setFirstName }) => {
   return (
     <div className="auth-wrapper">
       <p className="intro-text">
-        This is <strong>JobHuntScraper</strong>, a web application that allows you to scrape job listings from <strong>Remote.co</strong>, <strong>Stackoverflow.jobs</strong>, and <strong>SimplyHired</strong> into one convenient location. You can start scraping, view job listings, and filter them by job title or location. Please register and/or login to get started.
+      This is <em>JobHuntScraper</em>, a web application that allows you to scrape job listings from <em>Remote.co</em>, <em>Stackoverflow.jobs</em>, and <em>SimplyHired</em> into one convenient location. You can save jobs that interest you and access them later through your personalized "My Jobs" list. Start scraping, view job listings, filter by job title or location, and manage your saved jobs. Please register and/or log in to get started.
       </p>
       <div className="auth-container">
         <h2>Login</h2>
